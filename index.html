@@ -22,8 +22,8 @@
                         <label for="category">Category:</label>
                         <select id="category" required>
                             <option value="">Select category</option>
-                            <option value="transport"><i class="fa-solid fa-car-side" style="color: #c57a0a;></i> Transport</option>
-                            <option value="food"><i class="fa-solid fa-utensils" style="color: #ffffff;></i> Food</option>
+                            <option value="transport"><i class="fa-solid fa-car-side" style="color: #c57a0a;"></i> Transport</option>
+                            <option value="food"><i class="fa-solid fa-utensils" style="color: #ffffff;"></i> Food</option>
                             <option value="energy"><i class="fa-solid fa-bolt" style="color: #FFD43B;"></i> Energy</option>
                             <option value="waste"><i class="fa-solid fa-trash-can" style="color: #747373;"></i> Waste</option>
                         </select>
@@ -35,6 +35,16 @@
                             <option value="">Select activity</option>
                         </select>
                     </div>
+
+                    <div class="form-group">
+                        <label for="quantity">Quantity:</label>
+                        <div class="quantity-input">
+                            <input id="quantity" type="number" step="0.1" min="0" required>
+                            <span id="unit-label">unit</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="add-btn">Add Activity</button>
                 </form>
 
             </section>
