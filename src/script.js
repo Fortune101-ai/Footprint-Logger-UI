@@ -124,6 +124,27 @@ class CarbonFootprintTracker {
         document.getElementById('activity').innerHTML = '<option value="">Select activity</option>';
     }
 
+    handleFilterClick(clickedBtn) {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        clickedBtn.classList.add('active');
+
+        const category = clickedBtn.dataset.category;
+        this.filterActivities(category);
+    }
+
+    filterActivities(category) {
+        const activityItems = document.querySelectorAll('.activity-item');
+
+        activityItems.forEach(item => {
+            if (category === 'all' || item.dataset.category === category) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    }
 
     updateDisplay() {
         this.updateTotalEmissions();
@@ -133,6 +154,11 @@ class CarbonFootprintTracker {
     saveActivities() {
         localStorage.setItem('carbonFootprintActivities', JSON.stringify(this.activities));
         }
+
+    loadActivities() {
+        const saved = localStorage.getItem('carbonFootprintActivities')
+        return saved ? JSON.parse(saved) : []
+    }
 
 
 }
