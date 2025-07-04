@@ -33,7 +33,7 @@ class CarbonFootprintTracker {
                 'Eggs': { factor: 1.7, unit: 'kg' },
                 'Rice': { factor: 2.7, unit: 'kg' },
                 'Vegetables': { factor: 0.4, unit: 'kg' }
-              },
+            },
             waste: {
                 'General waste': { factor: 0.5, unit: 'kg' },
                 'Plastic waste': { factor: 1.8, unit: 'kg' },
@@ -64,7 +64,7 @@ class CarbonFootprintTracker {
         const category = document.getElementById('category').value;
         const activitySelection = document.getElementById('activity')
         const unitLabel = document.getElementById('unit-label')
-        
+
         activitySelection.innerHTML = '<option value="">Select activity</option>';
 
         if (category && this.emissionFactors[category]) {
@@ -76,7 +76,7 @@ class CarbonFootprintTracker {
             })
         }
 
-        activitySelection.addEventListener('change',()=>{
+        activitySelection.addEventListener('change', () => {
             const selectedActivity = activitySelection.value;
             if (selectedActivity && category) {
                 const unit = this.emissionFactors[category][selectedActivity].unit;
@@ -150,7 +150,7 @@ class CarbonFootprintTracker {
         this.updateTotalEmissions();
         this.updateActivitiesList();
         this.updateChart();
-        }
+    }
 
     updateTotalEmissions() {
         const today = new Date().toDateString();
@@ -160,14 +160,14 @@ class CarbonFootprintTracker {
 
         const total = todayActivities.reduce((sum, activity) => sum + activity.co2Emissions, 0);
         document.getElementById('total-co2').textContent = total.toFixed(1);
-        }
+    }
 
     updateActivitiesList() {
         const activitiesList = document.getElementById('activities-list');
         const today = new Date().toDateString();
         const todayActivities = this.activities.filter(activity => new Date(activity.timestamp).toDateString() === today);
 
-        if (todayActivities.length===0) {
+        if (todayActivities.length === 0) {
             activitiesList.innerHTML = '<p class="no-activities">No activities logged yet. Start by adding your first activity above!</p>';
             return;
         }
@@ -190,24 +190,32 @@ class CarbonFootprintTracker {
         `).join('')
     }
 
-    
+
 
     saveActivities() {
         localStorage.setItem('carbonFootprintActivities', JSON.stringify(this.activities));
-        }
+    }
 
     loadActivities() {
         const saved = localStorage.getItem('carbonFootprintActivities')
         return saved ? JSON.parse(saved) : []
     }
 
+    deleteActivity(id) {
+        this.activities = this.activities.filter(activity => activity.id !== id)
+        this.saveActivities()
+        this.updateDisplay()
+    }
+
+
+
 
 }
 
 let tracker;
-document.addEventListener('DOMContentLoaded', ()=> {
+document.addEventListener('DOMContentLoaded', () => {
 
-    setTimeout(()=>{
+    setTimeout(() => {
         tracker = new CarbonFootprintTracker();
-    },100)
+    }, 100)
 })
