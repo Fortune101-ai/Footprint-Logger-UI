@@ -60,6 +60,33 @@ class CarbonFootprintTracker {
         });
     }
 
+    updateActivityOptions() {
+        const category = document.getElementById('category').value;
+        const activitySelection = document.getElementById('activity')
+        const unitLabel = document.getElementById('unit-label')
+        
+        activitySelection.innerHTML = '<option value="">Select activity</option>';
+
+        if (category && this.emissionFactors[category]) {
+            Object.keys(this.emissionFactors[category]).forEach(activity => {
+                const option = document.createElement('option')
+                option.value = activity
+                option.textContent = activity
+                activitySelection.appendChild(option)
+            })
+        }
+
+        activitySelection.addEventListener('change',()=>{
+            const selectedActivity = activitySelection.value;
+            if (selectedActivity && category) {
+                const unit = this.emissionFactors[category][selectedActivity].unit;
+                unitLabel.textContent = unit
+            } else {
+                unitLabel.textContent = 'unit'
+            }
+        })
+    }
+
 
 }
 
