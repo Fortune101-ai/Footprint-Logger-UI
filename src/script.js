@@ -42,6 +42,20 @@ class CarbonFootprintTracker {
         };
     }
 
+    initializeEventListeners() {
+        const categorySelect = document.getElementById('category');
+        const form = document.getElementById('activity-form');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        categorySelect.addEventListener('change', () => this.updateActivityOptions());
+        form.addEventListener('submit', (e) => this.handleFormSubmit(e));
+
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => this.handleFilterClick(btn));
+        });
+    }
+
+
 }
 
 let tracker;
