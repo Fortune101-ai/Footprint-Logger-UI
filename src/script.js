@@ -1,22 +1,16 @@
-class CarbonFootprintTracker {
 
+class CarbonFootprintTracker {
     constructor() {
-        this.activities = this.loadActivities();
+        this.activities = this.loadFromStorage();
         this.chart = null;
         this.emissionFactors = this.getEmissionFactors();
 
         this.init();
-
-
-
-        this.initializeEventListeners();
-        this.initializeChart();
-        this.updateDisplay();
     }
 
     init() {
         this.setupEventListeners();
-        this.initializeChart();
+        this.initChart();
         this.render();
     }
 
@@ -58,6 +52,7 @@ class CarbonFootprintTracker {
     }
 
     setupEventListeners() {
+    
         document.getElementById('category').addEventListener('change', () => this.updateActivityOptions());
 
         document.getElementById('activity-form').addEventListener('submit', (e) => this.addActivity(e));
@@ -67,75 +62,63 @@ class CarbonFootprintTracker {
         });
     }
 
-    initializeEventListeners() {
-        const categorySelect = document.getElementById('category');
-        const form = document.getElementById('activity-form');
-        const filterButtons = document.querySelectorAll('.filter-btn');
-
-        categorySelect.addEventListener('change', () => this.updateActivityOptions());
-        form.addEventListener('submit', (e) => this.handleFormSubmit(e));
-
-        filterButtons.forEach(btn => {
-            btn.addEventListener('click', () => this.handleFilterClick(btn));
-        });
-    }
-
     updateActivityOptions() {
         const category = document.getElementById('category').value;
-        const activitySelection = document.getElementById('activity')
-        const unitLabel = document.getElementById('unit-label')
+        const activitySelect = document.getElementById('activity');
+        const unitLabel = document.getElementById('unit-label');
 
-        activitySelection.innerHTML = '<option value="">Select activity</option>';
+        activitySelect.innerHTML = '<option value="">Select activity</option>';
 
         if (category && this.emissionFactors[category]) {
             Object.keys(this.emissionFactors[category]).forEach(activity => {
-                const option = document.createElement('option')
-                option.value = activity
-                option.textContent = activity
-                activitySelection.appendChild(option)
-            })
+                activitySelect.innerHTML += `<option value="${activity}">${activity}</option>`;
+            });
         }
 
-        activitySelection.addEventListener('change', () => {
-            const selectedActivity = activitySelection.value;
-            if (selectedActivity && category) {
-                const unit = this.emissionFactors[category.toLowerCase()][selectedActivity].unit;
-                unitLabel.textContent = unit
+        activitySelect.onchange = () => {
+            const activity = activitySelect.value;
+            if (activity && category) {
+                unitLabel.textContent = this.emissionFactors[category][activity].unit;
             } else {
-                unitLabel.textContent = 'unit'
+                unitLabel.textContent = 'unit';
             }
-        })
+        };
     }
 
-    handleFormSubmit(e) {
+    addActivity(e) {
         e.preventDefault();
 
         const category = document.getElementById('category').value;
         const activity = document.getElementById('activity').value;
-        const quantity = parseFloat(document.getElementById('quantity').value)
+        const quantity = parseFloat(document.getElementById('quantity').value);
 
         if (!category || !activity || !quantity) {
             alert('Please fill in all fields');
-            return
+            return;
         }
 
         const emissionData = this.emissionFactors[category][activity];
-        const co2Emissions = quantity * emissionData.factor;
+        const co2Emissions = parseFloat((quantity * emissionData.factor).toFixed(2));
 
-        const activityData = {
+        this.activities.push({
             id: Date.now(),
             category,
             activity,
             quantity,
             unit: emissionData.unit,
-            co2Emissions: parseFloat(co2Emissions.toFixed(2)),
+            co2Emissions,
             timestamp: new Date().toISOString()
-        }
+        });
 
-        this.activities.push(activityData)
-        this.saveActivities();
-        this.updateDisplay()
+        this.saveToStorage();
+        this.render();
         this.resetForm();
+    }
+
+    deleteActivity(id) {
+        this.activities = this.activities.filter(activity => activity.id !== id);
+        this.saveToStorage();
+        this.render();
     }
 
     resetForm() {
@@ -144,51 +127,57 @@ class CarbonFootprintTracker {
         document.getElementById('activity').innerHTML = '<option value="">Select activity</option>';
     }
 
-    handleFilterClick(clickedBtn) {
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
+    setFilter(clickedBtn) {
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
         clickedBtn.classList.add('active');
 
         const category = clickedBtn.dataset.category;
-        this.filterActivities(category);
-    }
-
-    filterActivities(category) {
-        const activityItems = document.querySelectorAll('.activity-item');
-
-        activityItems.forEach(item => {
-            if (category === 'all' || item.dataset.category === category) {
-                item.classList.remove('hidden');
-            } else {
-                item.classList.add('hidden');
-            }
+        document.querySelectorAll('.activity-item').forEach(item => {
+            const shouldShow = category === 'all' || item.dataset.category === category;
+            item.classList.toggle('hidden', !shouldShow);
         });
     }
 
-    updateDisplay() {
-        this.updateTotalEmissions();
-        this.updateActivitiesList();
-        this.updateChart();
-    }
-
-    updateTotalEmissions() {
+    getTodayActivities() {
         const today = new Date().toDateString();
-        const todayActivities = this.activities.filter(activity =>
+        return this.activities.filter(activity =>
             new Date(activity.timestamp).toDateString() === today
         );
-
-        const total = todayActivities.reduce((sum, activity) => sum + activity.co2Emissions, 0);
-        document.getElementById('total-co2').textContent = total.toFixed(1);
     }
 
-    updateActivitiesList() {
+    getTotalEmissions() {
+        return this.getTodayActivities().reduce((sum, activity) => sum + activity.co2Emissions, 0);
+    }
+
+    getCategoryTotals() {
+        const totals = { transport: 0, food: 0, energy: 0, waste: 0 };
+        this.getTodayActivities().forEach(activity => {
+            totals[activity.category] += activity.co2Emissions;
+        });
+        return totals;
+    }
+
+    render() {
+        this.renderTotal();
+        this.renderActivities();
+        this.renderChart();
+    }
+
+    renderTotal() {
+        document.getElementById('total-co2').textContent = this.getTotalEmissions().toFixed(1);
+    }
+
+    renderActivities() {
         const activitiesList = document.getElementById('activities-list');
-        const today = new Date().toDateString();
-        const todayActivities = this.activities.filter(activity => new Date(activity.timestamp).toDateString() === today);
+        const todayActivities = this.getTodayActivities();
 
         if (todayActivities.length === 0) {
-            activitiesList.innerHTML = '<p class="no-activities">No activities logged yet. Start by adding your first activity above!</p>';
+            activitiesList.innerHTML = `
+                <div class="no-activities">
+                    <p>No activities logged yet.</p>
+                    <p>Start your eco-journey by adding your first activity above!</p>
+                </div>
+            `;
             return;
         }
 
@@ -196,41 +185,31 @@ class CarbonFootprintTracker {
             <div class="activity-item ${activity.category}" data-category="${activity.category}">
                 <div class="activity-info">
                     <div class="activity-name">${activity.activity}</div>
-                    <div class="activity-details">
-                        ${activity.quantity} ${activity.unit} • ${activity.category}
-                    </div>
+                    <div class="activity-details">${activity.quantity} ${activity.unit} • ${activity.category}</div>
                 </div>
                 <div class="activity-emissions">
                     ${activity.co2Emissions} kg CO₂
-                    <button class="delete-btn" onclick="tracker.deleteActivity(${activity.id})">
-                        Remove
-                    </button>
+                    <button class="delete-btn" onclick="tracker.deleteActivity(${activity.id})">Remove</button>
                 </div>
             </div>
-        `).join('')
+        `).join('');
     }
 
-    initializeChart() {
-
+    initChart() {
         if (typeof Chart === 'undefined') {
             document.querySelector('.chart-section').style.display = 'none';
             return;
         }
 
         try {
-            const chartContext = document.getElementById('emissions-chart').getContext('2d');
-            this.chart = new Chart(chartContext, {
+            const ctx = document.getElementById('emissions-chart').getContext('2d');
+            this.chart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: [],
                     datasets: [{
                         data: [],
-                        backgroundColor: [
-                            '#3182ce',
-                            '#38a169',
-                            '#d69e2e',
-                            '#e53e3e'
-                        ],
+                        backgroundColor: ['#3182ce', '#38a169', '#d69e2e', '#e53e3e'],
                         borderWidth: 2,
                         borderColor: '#fff'
                     }]
@@ -239,21 +218,14 @@ class CarbonFootprintTracker {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                usePointStyle: true
-                            }
-                        },
+                        legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } },
                         tooltip: {
                             callbacks: {
-                                label: function (context) {
-                                    const label = context.label || '';
+                                label: (context) => {
                                     const value = context.parsed;
                                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    return `${label}: ${value.toFixed(1)} kg CO₂ (${percentage}%)`;
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return `${context.label}: ${value.toFixed(1)} kg CO₂ (${percentage}%)`;
                                 }
                             }
                         }
@@ -264,79 +236,40 @@ class CarbonFootprintTracker {
             this.chart = null;
             document.querySelector('.chart-section').style.display = 'none';
         }
-
-
     }
 
-    updateChart() {
-        if (!this.chart) {
-            return;
-        }
+    renderChart() {
+        if (!this.chart) return;
 
-        const today = new Date().toDateString();
-        const todayActivities = this.activities.filter(activity => new Date (activity.timestamp).toDateString() === today)
+        const categoryTotals = this.getCategoryTotals();
+        const colorMap = { transport: '#3182ce', food: '#38a169', energy: '#d69e2e', waste: '#e53e3e' };
 
-        const categoryTotals = {
-            transport:0,
-            food: 0,
-            energy:0,
-            waste: 0
+        const chartData = Object.entries(categoryTotals)
+            .filter(([_, total]) => total > 0)
+            .reduce((acc, [category, total]) => {
+                acc.labels.push(category.charAt(0).toUpperCase() + category.slice(1));
+                acc.data.push(total);
+                acc.colors.push(colorMap[category]);
+                return acc;
+            }, { labels: [], data: [], colors: [] });
 
-        }
-
-        todayActivities.forEach(activity => {
-            categoryTotals[activity.category] += activity.co2Emissions
-        })
-
-        const labels = []
-        const data = []
-        const colors = []
-        const colorMap = {
-            transport: '#3182ce',
-            food: '#38a169',
-            energy: '#d69e2e',
-            waste: '#e53e3e'
-        }
-
-        Object.entries(categoryTotals).forEach(([category, total]) => {
-            if (total > 0) {
-                labels.push(category.charAt(0).toUpperCase() + category.slice(1));
-                data.push(total);
-                colors.push(colorMap[category]);
-            }
-        });
-
-        this.chart.data.labels = labels;
-        this.chart.data.datasets[0].data = data;
-        this.chart.data.datasets[0].backgroundColor = colors;
+        this.chart.data.labels = chartData.labels;
+        this.chart.data.datasets[0].data = chartData.data;
+        this.chart.data.datasets[0].backgroundColor = chartData.colors;
         this.chart.update();
-
     }
 
-    saveActivities() {
+    saveToStorage() {
         localStorage.setItem('carbonFootprintActivities', JSON.stringify(this.activities));
     }
 
-    loadActivities() {
-        const saved = localStorage.getItem('carbonFootprintActivities')
-        return saved ? JSON.parse(saved) : []
+    loadFromStorage() {
+        const saved = localStorage.getItem('carbonFootprintActivities');
+        return saved ? JSON.parse(saved) : [];
     }
-
-    deleteActivity(id) {
-        this.activities = this.activities.filter(activity => activity.id !== id)
-        this.saveActivities()
-        this.updateDisplay()
-    }
-
-
-
-
 }
 
 let tracker;
 document.addEventListener('DOMContentLoaded', () => {
-
-    setTimeout(() => {
-        tracker = new CarbonFootprintTracker();
-    }, 200)
-})
+    setTimeout(() => tracker = new CarbonFootprintTracker(), 200);
+});

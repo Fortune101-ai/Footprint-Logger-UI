@@ -37,7 +37,7 @@ body::before {
 
 .container {
     max-width: 1200px;
-    margin:0 auto;
+    margin: 0 auto;
     padding: 15px;
 }
 
@@ -51,13 +51,13 @@ header {
 header h1 {
     font-size: 2.5rem;
     margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     font-weight: 700;
 }
 
 header p {
     font-size: 1.1rem;
-    opacity: 0.6;
+    opacity: 0.95;
     font-weight: 300;
 }
 
@@ -87,7 +87,8 @@ section {
     grid-column: 2;
 }
 
-.activities-section, .chart-section {
+.activities-section,
+.chart-section {
     grid-column: 1 / -1;
 }
 
@@ -99,12 +100,6 @@ h2 {
     display: flex;
     align-items: center;
     gap: 8px;
-}
-
-h3 {
-    color: #4a5568;
-    margin-bottom: 15px;
-    font-size: 1.2rem;
 }
 
 .form-group {
@@ -119,7 +114,8 @@ label {
     font-size: 0.95rem;
 }
 
-select,input {
+select,
+input {
     width: 100%;
     padding: 12px 16px;
     border: 2px solid #e2e8f0;
@@ -129,10 +125,11 @@ select,input {
     background: white;
 }
 
-select:focus, input:focus {
+select:focus,
+input:focus {
     outline: none;
     border-color: #48bb78;
-    box-shadow: 0 0 0 3px rgba(72,187,120,0.1)
+    box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
 }
 
 .quantity-input {
@@ -142,7 +139,7 @@ select:focus, input:focus {
 }
 
 .quantity-input input {
-    flex: 1
+    flex: 1;
 }
 
 #unit-label {
@@ -391,7 +388,6 @@ footer {
     font-style: italic;
     opacity: 0.9;
 }
-
 
 @media (max-width: 768px) {
     .container {
