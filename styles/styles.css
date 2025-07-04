@@ -392,3 +392,160 @@ footer {
     opacity: 0.9;
 }
 
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    header p {
+        font-size: 1rem;
+    }
+    
+    main {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .input-section,
+    .summary-section,
+    .activities-section,
+    .chart-section {
+        grid-column: 1;
+    }
+    
+    section {
+        padding: 20px;
+        border-radius: 15px;
+    }
+    
+    h2 {
+        font-size: 1.3rem;
+    }
+    
+    .emissions-display #total-co2 {
+        font-size: 2.2rem;
+    }
+    
+    .filter-buttons {
+        justify-content: flex-start;
+        gap: 6px;
+    }
+    
+    .filter-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    
+    .activity-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 15px;
+    }
+    
+    .activity-emissions {
+        align-self: flex-end;
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .chart-container {
+        height: 300px;
+    }
+    
+    .chart-fallback {
+        height: 300px;
+    }
+    
+    .quantity-input {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    
+    #unit-label {
+        text-align: center;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 8px;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    section {
+        padding: 15px;
+    }
+    
+    .filter-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-btn {
+        text-align: center;
+        padding: 10px;
+    }
+    
+    .emissions-display {
+        padding: 20px;
+    }
+    
+    .emissions-display #total-co2 {
+        font-size: 2rem;
+    }
+    
+    .activity-item {
+        padding: 12px;
+    }
+    
+    .chart-container,
+    .chart-fallback {
+        height: 250px;
+    }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+    .chart-container,
+    .chart-fallback {
+        height: 200px;
+    }
+    
+    .activities-list {
+        max-height: 200px;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    button,
+    .filter-btn,
+    .delete-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    select,
+    input {
+        min-height: 44px;
+    }
+    
+    .activity-item:hover {
+        transform: none;
+    }
+    
+    .add-btn:hover,
+    .filter-btn:hover,
+    .delete-btn:hover {
+        transform: none;
+    }
+}
