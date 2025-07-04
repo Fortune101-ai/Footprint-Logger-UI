@@ -43,8 +43,8 @@ class CarbonFootprintTracker {
         };
 
         this.initializeEventListeners();
-        this.updateDisplay();
         this.initializeChart();
+        this.updateDisplay();
     }
 
     initializeEventListeners() {
