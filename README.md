@@ -1,4 +1,4 @@
-# Carbon Footprint Tracker
+# Carbon Footprint Logger
 
 A beautiful, user-friendly web application that helps individuals track their daily activities and monitor their environmental impact. Built with simplicity in mind, this app makes it easy for anyone to understand and reduce their carbon footprint.
 
