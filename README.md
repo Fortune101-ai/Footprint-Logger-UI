@@ -43,7 +43,7 @@ By tracking these activities, you can see where you have the biggest impact and 
 ### For Everyone (No Technical Knowledge Required)
 
 1. **Download the Files**
-   - Navigate to 
+   - Navigate to [https://github.com/Fortune101-ai/Footprint-Logger-UI](https://github.com/Fortune101-ai/Footprint-Logger-UI)
    - Click the green "Code" button above
    - Select "Download ZIP"
    - Extract the files to a folder on your computer
