@@ -79,7 +79,6 @@ class CarbonFootprintTracker {
         activitySelection.addEventListener('change', () => {
             const selectedActivity = activitySelection.value;
             if (selectedActivity && category) {
-                console.log(category, selectedActivity)
                 const unit = this.emissionFactors[category.toLowerCase()][selectedActivity].unit;
                 unitLabel.textContent = unit
             } else {
