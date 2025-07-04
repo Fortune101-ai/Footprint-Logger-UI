@@ -190,7 +190,63 @@ class CarbonFootprintTracker {
         `).join('')
     }
 
+    initializeChart() {
 
+        if (typeof Chart === 'undefined') {
+            document.querySelector('.chart-section').style.display = 'none';
+            return;
+        }
+
+        try {
+            const chartContext = document.getElementById('emissions-chart').getContext('2d');
+            this.chart = new Chart(chartContext, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#3182ce',
+                            '#38a169',
+                            '#d69e2e',
+                            '#e53e3e'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value.toFixed(1)} kg CO₂ (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            this.chart = null;
+            document.querySelector('.chart-section').style.display = 'none';
+        }
+
+
+    }
 
     saveActivities() {
         localStorage.setItem('carbonFootprintActivities', JSON.stringify(this.activities));
