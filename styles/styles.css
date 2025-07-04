@@ -34,3 +34,45 @@ header p {
     font-size: 1.1rem;
     opacity: 0.6
 }
+
+main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+section {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1)
+}
+
+.input-section {
+    grid-column: 1;
+}
+
+.summary-section {
+    grid-column: 2;
+}
+
+.activities-section, .chart-section {
+    grid-column: 1 / -1;
+}
+
+h2 {
+    color: #4a5568;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+h3 {
+    color: #4a5568;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
