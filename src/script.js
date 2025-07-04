@@ -151,6 +151,47 @@ class CarbonFootprintTracker {
         this.updateActivitiesList();
         this.updateChart();
         }
+
+    updateTotalEmissions() {
+        const today = new Date().toDateString();
+        const todayActivities = this.activities.filter(activity =>
+            new Date(activity.timestamp).toDateString() === today
+        );
+
+        const total = todayActivities.reduce((sum, activity) => sum + activity.co2Emissions, 0);
+        document.getElementById('total-co2').textContent = total.toFixed(1);
+        }
+
+    updateActivitiesList() {
+        const activitiesList = document.getElementById('activities-list');
+        const today = new Date().toDateString();
+        const todayActivities = this.activities.filter(activity => new Date(activity.timestamp).toDateString() === today);
+
+        if (todayActivities.length===0) {
+            activitiesList.innerHTML = '<p class="no-activities">No activities logged yet. Start by adding your first activity above!</p>';
+            return;
+        }
+
+        activitiesList.innerHTML = todayActivities.map(activity => `
+            <div class="activity-item ${activity.category}" data-category="${activity.category}">
+                <div class="activity-info">
+                    <div class="activity-name">${activity.activity}</div>
+                    <div class="activity-details">
+                        ${activity.quantity} ${activity.unit} • ${activity.category}
+                    </div>
+                </div>
+                <div class="activity-emissions">
+                    ${activity.co2Emissions} kg CO₂
+                    <button class="delete-btn" onclick="tracker.deleteActivity(${activity.id})">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        `).join('')
+    }
+
+    
+
     saveActivities() {
         localStorage.setItem('carbonFootprintActivities', JSON.stringify(this.activities));
         }
