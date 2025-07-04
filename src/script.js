@@ -183,7 +183,7 @@ class CarbonFootprintTracker {
                 <div class="activity-emissions">
                     ${activity.co2Emissions} kg CO₂
                     <button class="delete-btn" onclick="tracker.deleteActivity(${activity.id})">
-                        Delete
+                        Remove
                     </button>
                 </div>
             </div>
