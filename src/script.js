@@ -1,13 +1,27 @@
-
-
 class CarbonFootprintTracker {
 
     constructor() {
         this.activities = this.loadActivities();
         this.chart = null;
+        this.emissionFactors = this.getEmissionFactors();
+
+        this.init();
 
 
-        this.emissionFactors = {
+
+        this.initializeEventListeners();
+        this.initializeChart();
+        this.updateDisplay();
+    }
+
+    init() {
+        this.setupEventListeners();
+        this.initializeChart();
+        this.render();
+    }
+
+    getEmissionFactors() {
+        return {
             transport: {
                 'Car (petrol)': { factor: 0.148, unit: 'km' },
                 'Car (diesel)': { factor: 0.18, unit: 'km' },
@@ -41,10 +55,16 @@ class CarbonFootprintTracker {
                 'Food waste': { factor: 0.3, unit: 'kg' }
             }
         };
+    }
 
-        this.initializeEventListeners();
-        this.initializeChart();
-        this.updateDisplay();
+    setupEventListeners() {
+        document.getElementById('category').addEventListener('change', () => this.updateActivityOptions());
+
+        document.getElementById('activity-form').addEventListener('submit', (e) => this.addActivity(e));
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => this.setFilter(btn));
+        });
     }
 
     initializeEventListeners() {
@@ -318,5 +338,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setTimeout(() => {
         tracker = new CarbonFootprintTracker();
-    }, 100)
+    }, 200)
 })
