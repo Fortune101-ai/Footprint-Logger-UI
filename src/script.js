@@ -87,6 +87,53 @@ class CarbonFootprintTracker {
         })
     }
 
+    handleFormSubmit(e) {
+        e.preventDefault();
+
+        const category = document.getElementById('category').value;
+        const activity = document.getElementById('activity').value;
+        const quantity = parseFloat(document.getElementById('quantity').value)
+
+        if (!category || !activity || !quantity) {
+            alert('Please fill in all fields');
+            return
+        }
+
+        const emissionData = this.emissionFactors[category][activity];
+        const co2Emissions = quntity * emissionData.factor;
+
+        const activityData = {
+            id: Date.now(),
+            category,
+            activity,
+            quantity,
+            unit: emissionData.unit,
+            co2Emissions: parseFloat(co2Emissions.toFixed(2)),
+            timestamp: new Date().toISOString()
+        }
+
+        this.activities.push(activityData)
+        this.saveActivities();
+        this.updateDisplay()
+        this.resetForm();
+    }
+
+    resetForm() {
+        document.getElementById('activity-form').reset();
+        document.getElementById('unit-label').textContent = 'unit';
+        document.getElementById('activity').innerHTML = '<option value="">Select activity</option>';
+    }
+
+
+    updateDisplay() {
+        this.updateTotalEmissions();
+        this.updateActivitiesList();
+        this.updateChart();
+        }
+    saveActivities() {
+        localStorage.setItem('carbonFootprintActivities', JSON.stringify(this.activities));
+        }
+
 
 }
 
