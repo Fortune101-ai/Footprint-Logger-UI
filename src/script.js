@@ -4,6 +4,7 @@ class CarbonFootprintTracker {
 
     constructor() {
         this.activities = this.loadActivities();
+        this.chart = null;
 
 
         this.emissionFactors = {
@@ -40,6 +41,10 @@ class CarbonFootprintTracker {
                 'Food waste': { factor: 0.3, unit: 'kg' }
             }
         };
+
+        this.initializeEventListeners();
+        this.updateDisplay();
+        this.initializeChart();
     }
 
     initializeEventListeners() {
