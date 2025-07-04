@@ -79,6 +79,7 @@ class CarbonFootprintTracker {
         activitySelection.addEventListener('change', () => {
             const selectedActivity = activitySelection.value;
             if (selectedActivity && category) {
+                console.log(category, selectedActivity)
                 const unit = this.emissionFactors[category][selectedActivity].unit;
                 unitLabel.textContent = unit
             } else {
@@ -100,7 +101,7 @@ class CarbonFootprintTracker {
         }
 
         const emissionData = this.emissionFactors[category][activity];
-        const co2Emissions = quntity * emissionData.factor;
+        const co2Emissions = quantity * emissionData.factor;
 
         const activityData = {
             id: Date.now(),
@@ -245,6 +246,51 @@ class CarbonFootprintTracker {
             document.querySelector('.chart-section').style.display = 'none';
         }
 
+
+    }
+
+    updateChart() {
+        if (!this.chart) {
+            return;
+        }
+
+        const today = new Date().toDateString();
+        const todayActivities = this.activities.filter(activity => new Date (activity.timestamp).toDateString() === today)
+
+        const categoryTotals = {
+            transport:0,
+            food: 0,
+            energy:0,
+            waste: 0
+
+        }
+
+        todayActivities.forEach(activity => {
+            categoryTotals[activity.category] += activity.co2Emissions
+        })
+
+        const labels = []
+        const data = []
+        const colors = []
+        const colorMap = {
+            transport: '#3182ce',
+            food: '#38a169',
+            energy: '#d69e2e',
+            waste: '#e53e3e'
+        }
+
+        Object.entries(categoryTotals).forEach(([category, total]) => {
+            if (total > 0) {
+                labels.push(category.charAt(0).toUpperCase() + category.slice(1));
+                data.push(total);
+                colors.push(colorMap[category]);
+            }
+        });
+
+        this.chart.data.labels = labels;
+        this.chart.data.datasets[0].data = data;
+        this.chart.data.datasets[0].backgroundColor = colors;
+        this.chart.update();
 
     }
 
