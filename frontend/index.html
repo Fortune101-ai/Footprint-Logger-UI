@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Carbon Footprint Logger</title>
+
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+		/>
+
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+		<link rel="stylesheet" href="styles/styles.css" />
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<h1><i class="fa-solid fa-tree"></i> Carbon Footprint Logger</h1>
+				<p>Track your daily activities and nurture a greener tomorrow</p>
+			</header>
+
+			<main>
+				<section class="input-section">
+					<h2>Log your activity</h2>
+					<form id="activity-form">
+						<div class="form-group">
+							<label for="category">Category:</label>
+							<select id="category" required>
+								<option value="">Select category</option>
+								<option value="transport">Transport</option>
+								<option value="food">Food</option>
+								<option value="energy">Energy</option>
+								<option value="waste">Waste</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="activity">Activity:</label>
+							<select id="activity" required>
+								<option value="">Select activity</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="quantity">Quantity:</label>
+							<div class="quantity-input">
+								<input id="quantity" type="number" step="0.1" min="0" required />
+								<span id="unit-label">unit</span>
+							</div>
+						</div>
+
+						<button type="submit" class="add-btn">Add Activity</button>
+					</form>
+				</section>
+
+				<section class="summary-section">
+					<div class="total-emissions">
+						<h2>Today's Emissions</h2>
+						<div class="emissions-display">
+							<span id="total-co2">0.0</span>
+							<span class="unit">kg CO2</span>
+						</div>
+						<p class="impact-message">
+							Every small action counts towards a greener planet!
+						</p>
+					</div>
+				</section>
+
+				<section class="activity-section">
+					<h2>Today's Activities</h2>
+
+					<div class="filter-controls">
+						<div class="filter-buttons">
+							<button class="filter-btn active" data-category="all">All</button>
+							<button class="filter-btn" data-category="transport">
+								<i class="fa-solid fa-car-side" style="color: #c57a0a"></i> Transport
+							</button>
+							<button class="filter-btn" data-category="food">
+								<i class="fa-solid fa-utensils" style="color: #ffffff"></i> Food
+							</button>
+							<button class="filter-btn" data-category="energy">
+								<i class="fa-solid fa-bolt" style="color: #ffd43b"></i> Energy
+							</button>
+							<button class="filter-btn" data-category="waste">
+								<i class="fa-solid fa-trash-can" style="color: #747373"></i> Waste
+							</button>
+						</div>
+					</div>
+
+					<div id="activities-list" class="activities-list">
+						<div class="no-activities">
+							<div class="no-activities-icon">
+								<i class="fa-solid fa-seedling" style="color: #0e7201"></i>
+							</div>
+							<p>No activities logged yet.</p>
+							<p>Start your eco-journey by adding your first activity above!</p>
+						</div>
+					</div>
+				</section>
+
+				<section class="chart-section">
+					<h2>Emissions Breakdown</h2>
+					<div class="chart-container">
+						<canvas id="emissions-chart"></canvas>
+						<div id="chart-fallback" class="chart-fallback" style="display: none">
+							<div class="fallback-icon">
+								<i class="fa-solid fa-chart-pie" style="color: #63e6be"></i>
+							</div>
+							<p>Chart is currently unavailable</p>
+						</div>
+					</div>
+				</section>
+			</main>
+
+			<footer>
+				<p>
+					<i class="fa-solid fa-earth-africa"></i> Together, we can make a difference
+					for our planet
+				</p>
+			</footer>
+		</div>
+
+		<script src="src/script.js"></script>
+	</body>
+</html>
