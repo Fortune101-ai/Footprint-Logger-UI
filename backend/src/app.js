@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const connectToDatabase = require('./config/db');
+const errorHandler = require('./middleware/errorHandler');
 
 connectToDatabase().catch(err => {
     console.error('Failed to connect to the database', err);
@@ -18,6 +19,10 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
+
+
+app.use((req,res)=>res.status(404).json({message: 'Route Not Found'}));
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
