@@ -24,5 +24,30 @@ const register = asyncRouteWrapper(async (req, res) => {
     res.status(201).json({ message: 'User registered successfully', userId: user._id, token });
 });
 
+const login = asyncRouteWrapper(async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password are required' });
+    }
 
-module.exports = { register };
+    const user = await User.findOne({ email });
+    if (!user) {
+        return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
+    if (!isMatch) {
+        return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    const token = sign(user._id);
+    res.status(200).json({ message: 'Login successful', userId: user._id, token });
+});
+
+const getProfile = asyncRouteWrapper(async (req, res) => {
+    const user = await User.findById(req.user.id).select('username email');
+    res.status(200).json(user);
+});
+
+
+module.exports = { register, login, getProfile };
