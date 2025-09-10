@@ -5,6 +5,7 @@ const connectToDatabase = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 const authRoutes = require('./routes/auth_routes');
 const logRoutes = require('./routes/log_routes');
+const activityRoutes = require('./routes/activity_routes');
 
 connectToDatabase().catch(err => {
     console.error('Failed to connect to the database', err);
@@ -19,6 +20,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/logs', logRoutes);
+app.use('/api/activities', activityRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
