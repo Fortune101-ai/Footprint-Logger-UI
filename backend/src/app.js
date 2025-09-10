@@ -4,6 +4,7 @@ require('dotenv').config();
 const connectToDatabase = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 const authRoutes = require('./routes/auth_routes');
+const logRoutes = require('./routes/log_routes');
 
 connectToDatabase().catch(err => {
     console.error('Failed to connect to the database', err);
@@ -17,6 +18,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use('/api/logs', logRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
