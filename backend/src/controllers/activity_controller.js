@@ -1,4 +1,5 @@
 const Activity = require("../models/Activity");
+const Log = require("../models/Log");
 
 const emissionFactors = {
   transport: {
@@ -63,6 +64,13 @@ const addActivity = async (req, res, next) => {
     });
 
     await newActivity.save();
+
+    await Log.create({
+      user: req.user.id,
+      activity: `${category}: ${activity}`,
+      emission: co2Emissions,
+    });
+    
     res.status(201).json(newActivity);
   } catch (error) {
     console.error(error);
