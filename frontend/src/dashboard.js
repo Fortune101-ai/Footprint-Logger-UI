@@ -132,8 +132,8 @@ class CarbonFootprintTracker {
       this.activities.unshift(newActivity);
       this.resetForm();
       this.render();
-      await this.fetchSummary(); // update summary after adding activity
-      await this.fetchLeaderboard(); // update leaderboard
+      await this.fetchSummary();
+      await this.fetchLeaderboard();
     } catch (err) {
       console.error(err);
       alert("Something went wrong. Try again.");
@@ -145,6 +145,14 @@ class CarbonFootprintTracker {
     document.getElementById("unit-label").textContent = "unit";
     document.getElementById("activity").innerHTML =
       '<option value="">Select activity</option>';
+  }
+
+  updateTotalEmissions() {
+    const total = this.getTotalEmissions();
+    const totalCo2El = document.getElementById("total-co2");
+    if (totalCo2El) {
+      totalCo2El.textContent = total.toFixed(1);
+    }
   }
 
   async fetchActivities() {
@@ -162,6 +170,7 @@ class CarbonFootprintTracker {
         quantity: log.quantity || 1,
         unit: log.unit || "unit",
         co2Emissions: log.emission,
+        timestamp: log.date
       }));
     } catch (err) {
       console.error(err);
@@ -353,6 +362,7 @@ class CarbonFootprintTracker {
     this.renderChart();
     this.renderSummary();
     this.renderLeaderboard();
+    this.updateTotalEmissions();
   }
 
   renderActivities() {
