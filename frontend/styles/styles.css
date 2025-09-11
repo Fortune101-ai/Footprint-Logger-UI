@@ -261,6 +261,71 @@ main {
   margin-bottom: 30px;
 }
 
+/* Category tags inside activities */
+.category-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  margin-left: 6px;
+}
+
+.category-tag.transport {
+  background: rgba(49, 130, 206, 0.15);
+  color: #2b6cb0;
+}
+.category-tag.food {
+  background: rgba(56, 161, 105, 0.15);
+  color: #2f855a;
+}
+.category-tag.energy {
+  background: rgba(214, 158, 46, 0.15);
+  color: #b7791f;
+}
+.category-tag.waste {
+  background: rgba(229, 62, 62, 0.15);
+  color: #c53030;
+}
+
+/* Delete button simplified */
+.delete-btn {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  color: #e53e3e;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.delete-btn:hover {
+  color: #9b2c2c;
+}
+
+/* Filter buttons polished */
+.filter-btn {
+  background: white;
+  border: 2px solid #48bb78;
+  color: #2f855a;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filter-btn.active {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  border-color: transparent;
+  color: white;
+}
+
+.filter-btn:hover:not(.active) {
+  background: rgba(72, 187, 120, 0.1);
+}
+
+
 section {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
