@@ -11,6 +11,7 @@ const {
 router.post("/", authenticateToken, createLog);
 router.get("/user", authenticateToken, getUserLogs);
 router.get("/average", authenticateToken, getAverageEmission);
-router.get("/leaderboard", getLeaderboard);
+router.get("/leaderboard",authenticateToken, getLeaderboard);
+router.get("/summary", authenticateToken, getUserSummary);
 
 module.exports = router;

@@ -42,9 +42,33 @@ const getLeaderboard = async (req, res, next) => {
   );
 };
 
+const getUserSummary = async (req, res, next) => {
+  const logs = await Log.find({ user: req.user.id });
+  const today = new Date().toDateString();
+  const daily = logs
+    .filter((l) => new Date(l.date).toDateString() === today)
+    .reduce((sum, l) => sum + l.emission, 0);
+
+  const last7Days = new Date();
+  last7Days.setDate(last7Days.getDate() - 7);
+  const weekly = logs
+    .filter((l) => new Date(l.date) >= last7Days)
+    .reduce((sum, l) => sum + l.emission, 0);
+
+  const last30Days = new Date();
+  last30Days.setDate(last30Days.getDate() - 30);
+  const monthly = logs
+    .filter((l) => new Date(l.date) >= last30Days)
+    .reduce((sum, l) => sum + l.emission, 0);
+
+  res.json({ daily, weekly, monthly });
+};
+
+
 module.exports = {
   createLog,
   getUserLogs,
   getAverageEmission,
   getLeaderboard,
+  getUserSummary,
 };
