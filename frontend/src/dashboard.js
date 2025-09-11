@@ -5,6 +5,8 @@ class CarbonFootprintTracker {
     this.token = localStorage.getItem("token");
     this.userId = localStorage.getItem("userId");
     this.username = "";
+    this.leaderboard = [];
+    this.summary = { daily: 0, weekly: 0, monthly: 0 };
 
     this.init();
   }
@@ -13,6 +15,8 @@ class CarbonFootprintTracker {
     await this.fetchUserProfile();
     this.setupEventListeners();
     await this.fetchActivities();
+    await this.fetchSummary();
+    await this.fetchLeaderboard();
     this.initChart();
     this.render();
   }
@@ -69,9 +73,7 @@ class CarbonFootprintTracker {
     try {
       const res = await fetch(
         `http://localhost:5000/api/activities/options?category=${category}`,
-        {
-          headers: { Authorization: `Bearer ${this.token}` },
-        }
+        { headers: { Authorization: `Bearer ${this.token}` } }
       );
       if (!res.ok) throw new Error("Failed to fetch activity options");
 
@@ -130,6 +132,8 @@ class CarbonFootprintTracker {
       this.activities.unshift(newActivity);
       this.resetForm();
       this.render();
+      await this.fetchSummary(); // update summary after adding activity
+      await this.fetchLeaderboard(); // update leaderboard
     } catch (err) {
       console.error(err);
       alert("Something went wrong. Try again.");
@@ -145,12 +149,20 @@ class CarbonFootprintTracker {
 
   async fetchActivities() {
     try {
-      const res = await fetch("http://localhost:5000/api/activities", {
+      const res = await fetch("http://localhost:5000/api/logs/user", {
         headers: { Authorization: `Bearer ${this.token}` },
       });
-      if (!res.ok) throw new Error("Failed to fetch activities");
+      if (!res.ok) throw new Error("Failed to fetch logs");
 
-      this.activities = await res.json();
+      const data = await res.json();
+      this.activities = data.logs.map((log) => ({
+        _id: log._id,
+        category: log.category || "unknown",
+        activity: log.activity,
+        quantity: log.quantity || 1,
+        unit: log.unit || "unit",
+        co2Emissions: log.emission,
+      }));
     } catch (err) {
       console.error(err);
     }
@@ -166,6 +178,8 @@ class CarbonFootprintTracker {
 
       this.activities = this.activities.filter((act) => act._id !== id);
       this.render();
+      await this.fetchSummary();
+      await this.fetchLeaderboard();
     } catch (err) {
       console.error(err);
       alert("Failed to delete activity");
@@ -208,43 +222,57 @@ class CarbonFootprintTracker {
     return totals;
   }
 
-  render() {
-    this.renderTotal();
-    this.renderActivities();
-    this.renderChart();
+  async fetchSummary() {
+    try {
+      const res = await fetch("http://localhost:5000/api/logs/summary", {
+        headers: { Authorization: `Bearer ${this.token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch summary");
+
+      this.summary = await res.json();
+      this.renderSummary();
+    } catch (err) {
+      console.error(err);
+    }
   }
 
-  renderTotal() {
-    document.getElementById("total-co2").textContent =
-      this.getTotalEmissions().toFixed(1);
+  async fetchLeaderboard() {
+    try {
+      const res = await fetch("http://localhost:5000/api/logs/leaderboard", {
+        headers: { Authorization: `Bearer ${this.token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch leaderboard");
+
+      this.leaderboard = await res.json();
+      this.renderLeaderboard();
+    } catch (err) {
+      console.error(err);
+    }
   }
 
-  renderActivities() {
-    const activitiesList = document.getElementById("activities-list");
-    const todayActivities = this.getTodayActivities();
+  renderSummary() {
+    document.getElementById("daily-emission").textContent =
+      this.summary.daily.toFixed(1);
+    document.getElementById("weekly-emission").textContent =
+      this.summary.weekly.toFixed(1);
+    document.getElementById("monthly-emission").textContent =
+      this.summary.monthly.toFixed(1);
+  }
 
-    if (todayActivities.length === 0) {
-      activitiesList.innerHTML = `
-        <div class="no-activities">
-          <p>No activities logged yet.</p>
-          <p>Start your eco-journey by adding your first activity above!</p>
-        </div>
-      `;
+  renderLeaderboard() {
+    const leaderboardContainer = document.getElementById("leaderboard-list");
+    if (!this.leaderboard.length) {
+      leaderboardContainer.innerHTML = `<p>No leaderboard data yet.</p>`;
       return;
     }
 
-    activitiesList.innerHTML = todayActivities
+    leaderboardContainer.innerHTML = this.leaderboard
       .map(
-        (act) => `
-        <div class="activity-item ${act.category}" data-category="${act.category}">
-          <div class="activity-info">
-            <div class="activity-name">${act.activity}</div>
-            <div class="activity-details">${act.quantity} ${act.unit} • ${act.category}</div>
-          </div>
-          <div class="activity-emissions">
-            ${act.co2Emissions} kg CO₂
-            <button class="delete-btn" onclick="tracker.deleteActivity('${act._id}')">Remove</button>
-          </div>
+        (entry, idx) => `
+        <div class="leaderboard-item">
+          <span class="rank">${idx + 1}.</span>
+          <span class="username">${entry.user}</span>
+          <span class="emission">${entry.totalEmission.toFixed(1)} kg CO₂</span>
         </div>
       `
       )
@@ -262,7 +290,7 @@ class CarbonFootprintTracker {
         datasets: [
           {
             data: [],
-            backgroundColor: ["#3182ce", "#38a169", "#d69e2e", "#e53e3e"],
+            backgroundColor: [],
             borderWidth: 2,
             borderColor: "#fff",
           },
@@ -319,9 +347,33 @@ class CarbonFootprintTracker {
     this.chart.data.datasets[0].backgroundColor = chartData.colors;
     this.chart.update();
   }
+
+  render() {
+    this.renderActivities();
+    this.renderChart();
+    this.renderSummary();
+    this.renderLeaderboard();
+  }
+
+  renderActivities() {
+    const container = document.getElementById("activities-list");
+    if (!this.activities.length) {
+      container.innerHTML = `<p>No activities yet.</p>`;
+      return;
+    }
+
+    container.innerHTML = this.activities
+      .map(
+        (act) => `
+      <div class="activity-item" data-category="${act.category}">
+        <span>${act.activity}</span>
+        <span>${act.co2Emissions} kg CO₂</span>
+        <button onclick="tracker.deleteActivity('${act._id}')">Delete</button>
+      </div>
+    `
+      )
+      .join("");
+  }
 }
 
-let tracker;
-document.addEventListener("DOMContentLoaded", () => {
-  tracker = new CarbonFootprintTracker();
-});
+const tracker = new CarbonFootprintTracker();
