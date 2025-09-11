@@ -6,6 +6,7 @@ const {
   getUserLogs,
   getAverageEmission,
   getLeaderboard,
+  getUserSummary
 } = require("../controllers/log_controller");
 
 router.post("/", authenticateToken, createLog);
