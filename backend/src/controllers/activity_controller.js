@@ -1,5 +1,4 @@
 const Activity = require("../models/Activity");
-const User = require("../models/User");
 
 const emissionFactors = {
   transport: {
