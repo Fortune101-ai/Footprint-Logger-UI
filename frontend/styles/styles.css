@@ -841,3 +841,108 @@ footer {
 .waste {
   border-left-color: var(--destructive);
 }
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+  }
+
+  main {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .input-section,
+  .streak-section,
+  .summary-section,
+  .detailed-summary-section,
+  .activities-section,
+  .chart-section {
+    grid-column: 1;
+  }
+
+  section {
+    padding: 1.5rem;
+  }
+
+  .detailed-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-buttons {
+    justify-content: flex-start;
+    gap: 0.5rem;
+  }
+
+  .activity-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .activity-emissions {
+    align-self: flex-end;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .chart-container,
+  .chart-fallback {
+    height: 300px;
+  }
+
+  .quantity-input {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #unit-label {
+    text-align: center;
+    min-width: auto;
+  }
+
+  .streak-cards {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  section {
+    padding: 1rem;
+  }
+
+  .filter-buttons {
+    flex-direction: column;
+  }
+
+  .filter-btn {
+    text-align: center;
+    justify-content: center;
+  }
+
+  .emissions-display {
+    padding: 1.5rem;
+  }
+
+  .emissions-display #total-co2 {
+    font-size: 2.5rem;
+  }
+
+  .chart-container,
+  .chart-fallback {
+    height: 250px;
+  }
+}
