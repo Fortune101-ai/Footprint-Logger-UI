@@ -1,3 +1,5 @@
+
+
 class CarbonFootprintTracker {
   constructor() {
     this.activities = [];
@@ -26,7 +28,7 @@ class CarbonFootprintTracker {
 
   async fetchUserProfile() {
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/profile`, {
+      const res = await fetch(`${window.ENV.BACKEND_URL}/api/auth/profile`, {
         headers: { Authorization: `Bearer ${this.token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch profile");
@@ -118,7 +120,7 @@ class CarbonFootprintTracker {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/activities", {
+      const res = await fetch(`${window.ENV.BACKEND_URL}/api/activities`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -162,7 +164,7 @@ class CarbonFootprintTracker {
 
   async fetchActivities() {
     try {
-      const res = await fetch("http://localhost:5000/api/activities", {
+      const res = await fetch(`${window.ENV.BACKEND_URL}/api/activities`, {
         headers: { Authorization: `Bearer ${this.token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch logs");
@@ -184,7 +186,7 @@ class CarbonFootprintTracker {
 
   async deleteActivity(id) {
     try {
-      const res = await fetch(`http://localhost:5000/api/activities/${id}`, {
+      const res = await fetch(`${window.ENV.BACKEND_URL}/api/activities/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${this.token}` },
       });
@@ -237,7 +239,7 @@ class CarbonFootprintTracker {
 
   async fetchSummary() {
     try {
-      const res = await fetch("http://localhost:5000/api/activities/summary", {
+      const res = await fetch(`${window.ENV.BACKEND_URL}/api/activities/summary`, {
         headers: { Authorization: `Bearer ${this.token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch summary");
@@ -252,7 +254,7 @@ class CarbonFootprintTracker {
   async fetchLeaderboard() {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/activities/leaderboard",
+        `${window.ENV.BACKEND_URL}/api/activities/leaderboard`,
         {
           headers: { Authorization: `Bearer ${this.token}` },
         }
@@ -272,7 +274,7 @@ class CarbonFootprintTracker {
   async fetchStreak() {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/activities/streak",
+        `${window.ENV.BACKEND_URL}/api/activities/streak`,
         {
           headers: { Authorization: `Bearer ${this.token}` },
         }
