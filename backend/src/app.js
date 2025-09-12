@@ -4,7 +4,6 @@ require("dotenv").config();
 const connectToDatabase = require("./config/db");
 const errorHandler = require("./middleware/errorHandler");
 const authRoutes = require("./routes/auth_routes");
-const logRoutes = require("./routes/log_routes");
 const activityRoutes = require("./routes/activity_routes");
 
 connectToDatabase().catch((err) => {
@@ -18,7 +17,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
-app.use("/api/logs", logRoutes);
 app.use("/api/activities", activityRoutes);
 
 app.get("/", (req, res) => {
