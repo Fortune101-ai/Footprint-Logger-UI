@@ -40,7 +40,9 @@ const addActivity = async (req, res) => {
     const { category, activity, quantity } = req.body;
 
     if (!category || !activity || !quantity) {
-      return res.status(400).json({ message: "Category, activity, and quantity are required" });
+      return res
+        .status(400)
+        .json({ message: "Category, activity, and quantity are required" });
     }
 
     const factorData = emissionFactors[category]?.[activity];
@@ -69,7 +71,9 @@ const addActivity = async (req, res) => {
 
 const getUserActivities = async (req, res) => {
   try {
-    const activities = await Activity.find({ user: req.user.id }).sort({ timestamp: -1 });
+    const activities = await Activity.find({ user: req.user.id }).sort({
+      timestamp: -1,
+    });
     res.status(200).json(activities);
   } catch (error) {
     res.status(500).json({ message: "Error fetching activities" });
@@ -91,7 +95,6 @@ const getActivityOptions = async (req, res) => {
   }
 };
 
-
 const deleteActivity = async (req, res) => {
   try {
     const activity = await Activity.findOneAndDelete({
@@ -99,7 +102,8 @@ const deleteActivity = async (req, res) => {
       user: req.user.id,
     });
 
-    if (!activity) return res.status(404).json({ message: "Activity not found" });
+    if (!activity)
+      return res.status(404).json({ message: "Activity not found" });
     res.json({ message: "Activity deleted" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting activity" });
@@ -127,8 +131,12 @@ const getSummary = async (req, res) => {
       { $sort: { totalEmissions: 1 } },
     ]);
 
-    const totalEmissionSum = allActivities.reduce((sum, u) => sum + u.totalEmissions, 0);
-    const avgEmission = allActivities.length > 0 ? totalEmissionSum / allActivities.length : 0;
+    const totalEmissionSum = allActivities.reduce(
+      (sum, u) => sum + u.totalEmissions,
+      0
+    );
+    const avgEmission =
+      allActivities.length > 0 ? totalEmissionSum / allActivities.length : 0;
 
     res.json({ leaderboard: allActivities, averageEmissions: avgEmission });
   } catch (error) {
@@ -163,6 +171,64 @@ const getUserSummary = async (req, res) => {
   }
 };
 
+const getUserStreak = async (req, res) => {
+  try {
+    const activities = await Activity.find({ user: req.user.id }).sort({
+      timestamp: 1,
+    });
+
+    if (activities.length === 0) {
+      return res.json({ currentStreak: 0, longestStreak: 0 });
+    }
+
+    const activityDates = [
+      ...new Set(activities.map((a) => new Date(a.timestamp).toDateString())),
+    ].sort((a, b) => new Date(a) - new Date(b));
+
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 1;
+
+    for (let i = 1; i < activityDates.length; i++) {
+      const prevDate = new Date(activityDates[i - 1]);
+      const currDate = new Date(activityDates[i]);
+      const dayDifference = (currDate - prevDate) / (1000 * 60 * 60 * 24);
+
+      if (dayDifference === 1) {
+        tempStreak += 1;
+      } else {
+        longestStreak = Math.max(longestStreak, tempStreak);
+        tempStreak = 1;
+      }
+    }
+    longestStreak = Math.max(longestStreak, tempStreak);
+
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    const lastActivityDate = activityDates[activityDates.length - 1];
+
+    if (lastActivityDate === today || lastActivityDate === yesterday) {
+      let streakCount = 1;
+      for (let i = activityDates.length - 2; i >= 0; i--) {
+        const prevDate = new Date(activityDates[i]);
+        const nextDate = new Date(activityDates[i + 1]);
+        const dayDifference = (nextDate - prevDate) / (1000 * 60 * 60 * 24);
+
+        if (dayDifference === 1) {
+          streakCount += 1;
+        } else {
+          break;
+        }
+      }
+      currentStreak = streakCount;
+    }
+
+    res.json({ currentStreak, longestStreak });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user streak" });
+  }
+};
+
 module.exports = {
   addActivity,
   getUserActivities,
@@ -170,4 +236,5 @@ module.exports = {
   deleteActivity,
   getSummary,
   getUserSummary,
+  getUserStreak,
 };
