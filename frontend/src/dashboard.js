@@ -7,6 +7,8 @@ class CarbonFootprintTracker {
     this.username = "";
     this.leaderboard = [];
     this.summary = { daily: 0, weekly: 0, monthly: 0 };
+    this.streak = { currentStreak: 0, longestStreak: 0 };
+    this.averageEmissions = 0;
 
     this.init();
   }
@@ -17,6 +19,7 @@ class CarbonFootprintTracker {
     await this.fetchActivities();
     await this.fetchSummary();
     await this.fetchLeaderboard();
+    await this.fetchStreak();
     this.initChart();
     this.render();
   }
@@ -105,7 +108,9 @@ class CarbonFootprintTracker {
     e.preventDefault();
     const category = document.getElementById("category").value;
     const activity = document.getElementById("activity").value;
-    const quantity = parseFloat(document.getElementById("quantity").value);
+    const quantity = Number.parseFloat(
+      document.getElementById("quantity").value
+    );
 
     if (!category || !activity || !quantity) {
       alert("Please fill in all fields");
@@ -203,9 +208,8 @@ class CarbonFootprintTracker {
 
     const category = clickedBtn.dataset.category;
     document.querySelectorAll(".activity-item").forEach((item) => {
-      const shouldShow =
-        category === "all" || item.dataset.category === category;
-      item.classList.toggle("hidden", !shouldShow);
+      const show = category === "all" || item.dataset.category === category;
+      item.classList.toggle("hidden", !show);
     });
   }
 
@@ -257,9 +261,28 @@ class CarbonFootprintTracker {
 
       const summary = await res.json();
       this.leaderboard = summary.leaderboard;
+      this.averageEmissions = summary.averageEmissions || 0;
       this.renderLeaderboard();
+      this.renderAverageEmissions();
     } catch (err) {
       console.error(err);
+    }
+  }
+
+  async fetchStreak() {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/activities/streak",
+        {
+          headers: { Authorization: `Bearer ${this.token}` },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch streak data");
+
+      this.streak = await response.json();
+      this.renderStreak();
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -272,22 +295,45 @@ class CarbonFootprintTracker {
       this.summary.monthly.toFixed(1);
   }
 
+  renderStreak() {
+    const currentStreakEl = document.getElementById("current-streak");
+    const longestStreakEl = document.getElementById("longest-streak");
+
+    if (currentStreakEl) {
+      currentStreakEl.textContent = this.streak.currentStreak || 0;
+    }
+    if (longestStreakEl) {
+      longestStreakEl.textContent = this.streak.longestStreak || 0;
+    }
+  }
+
+  renderAverageEmissions() {
+    const avgEmissionsEl = document.getElementById("average-emissions");
+    if (avgEmissionsEl) {
+      avgEmissionsEl.textContent = this.averageEmissions.toFixed(1);
+    }
+  }
+
   renderLeaderboard() {
     const leaderboardContainer = document.getElementById("leaderboard-list");
     if (!this.leaderboard.length) {
-      leaderboardContainer.innerHTML = `<p>No leaderboard data yet.</p>`;
+      leaderboardContainer.innerHTML = `<p class="no-data">No leaderboard data yet.</p>`;
       return;
     }
 
     leaderboardContainer.innerHTML = this.leaderboard
+      .slice(0, 10)
       .map(
         (entry, idx) => `
-        <div class="leaderboard-item">
+        <div class="leaderboard-item ${idx < 3 ? "top-three" : ""}">
           <span class="rank">${idx + 1}.</span>
           <span class="username">${entry.username}</span>
           <span class="emission">${entry.totalEmissions.toFixed(
             1
           )} kg CO₂</span>
+          ${idx === 0 ? '<span class="badge gold">🏆</span>' : ""}
+          ${idx === 1 ? '<span class="badge silver">🥈</span>' : ""}
+          ${idx === 2 ? '<span class="badge bronze">🥉</span>' : ""}
         </div>
       `
       )
@@ -295,10 +341,8 @@ class CarbonFootprintTracker {
   }
 
   initChart() {
-    if (typeof Chart === "undefined") return;
-
     const ctx = document.getElementById("emissions-chart").getContext("2d");
-    this.chart = new Chart(ctx, {
+    this.chart = new window.Chart(ctx, {
       type: "doughnut",
       data: {
         labels: [],
@@ -324,8 +368,11 @@ class CarbonFootprintTracker {
               label: (ctx) => {
                 const value = ctx.parsed;
                 const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-                const perc = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                return `${ctx.label}: ${value.toFixed(1)} kg CO₂ (${perc}%)`;
+                const percentage =
+                  total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                return `${ctx.label}: ${value.toFixed(
+                  1
+                )} kg CO₂ (${percentage}%)`;
               },
             },
           },
@@ -368,6 +415,8 @@ class CarbonFootprintTracker {
     this.renderChart();
     this.renderSummary();
     this.renderLeaderboard();
+    this.renderStreak();
+    this.renderAverageEmissions();
     this.updateTotalEmissions();
   }
 
@@ -383,7 +432,7 @@ class CarbonFootprintTracker {
         (act) => `
       <div class="activity-item" data-category="${act.category}">
         <span>${act.activity}</span>
-        <span>${act.co2Emissions} kg CO₂</span>
+        <span>${act.co2Emissions} kg CO<sub>2</sub></span>
         <button class='delete-btn' onclick="tracker.deleteActivity('${act._id}')">Delete</button>
       </div>
     `
