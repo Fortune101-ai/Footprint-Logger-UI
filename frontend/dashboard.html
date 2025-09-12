@@ -16,21 +16,47 @@
   </head>
   <body>
     <nav class="navbar">
-      <div class="logo"><i class="fa-solid fa-leaf" style="color: #d97706; margin-right: 0.5rem;"></i> Footprint Logger</div>
+      <div class="logo">
+        <i
+          class="fa-solid fa-leaf"
+          style="color: #d97706; margin-right: 0.5rem"
+        ></i>
+        Footprint Logger
+      </div>
       <ul class="nav-links">
-        <li><a id="homeBtn" href="index.html"><i class="fa-solid fa-home"></i> Home</a></li>
-        <li><a href="#" id="logoutBtn"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
+        <li>
+          <a id="homeBtn" href="index.html"
+            ><i class="fa-solid fa-home"></i> Home</a
+          >
+        </li>
+        <li>
+          <a href="#" id="logoutBtn"
+            ><i class="fa-solid fa-sign-out-alt"></i> Logout</a
+          >
+        </li>
       </ul>
     </nav>
 
     <header class="container">
-      <h1><i class="fa-solid fa-chart-line" style="color: #d97706; margin-right: 0.5rem;"></i> Welcome, <span id="usernameDisplay">User</span>!</h1>
+      <h1>
+        <i
+          class="fa-solid fa-chart-line"
+          style="color: #d97706; margin-right: 0.5rem"
+        ></i>
+        Welcome, <span id="usernameDisplay">User</span>!
+      </h1>
       <p>Track your carbon footprint and make a difference every day.</p>
     </header>
 
     <main class="container">
       <section class="input-section">
-        <h2><i class="fa-solid fa-plus-circle" style="color: #d97706; margin-right: 0.5rem;"></i> Log Your Activity</h2>
+        <h2>
+          <i
+            class="fa-solid fa-plus-circle"
+            style="color: #d97706; margin-right: 0.5rem"
+          ></i>
+          Log Your Activity
+        </h2>
         <form id="activity-form">
           <div class="form-group">
             <label for="category">Category:</label>
@@ -63,7 +89,13 @@
       </section>
 
       <section class="streak-section">
-        <h2><i class="fa-solid fa-fire" style="color: #d97706; margin-right: 0.5rem;"></i> Activity Streak</h2>
+        <h2>
+          <i
+            class="fa-solid fa-fire"
+            style="color: #d97706; margin-right: 0.5rem"
+          ></i>
+          Activity Streak
+        </h2>
         <div class="streak-cards">
           <div class="streak-card">
             <h3><i class="fa-solid fa-calendar-check"></i> Current Streak</h3>
@@ -86,20 +118,32 @@
 
       <section class="summary-section">
         <div class="total-emissions" id="total-emissions">
-          <h2><i class="fa-solid fa-gauge-high" style="color: #d97706; margin-right: 0.5rem;"></i> Today's Emissions</h2>
+          <h2>
+            <i
+              class="fa-solid fa-gauge-high"
+              style="color: #d97706; margin-right: 0.5rem"
+            ></i>
+            Today's Emissions
+          </h2>
           <div class="emissions-display">
             <span id="total-co2">0.0</span>
             <span class="unit">kg CO₂</span>
           </div>
           <p class="impact-message">
-            <i class="fa-solid fa-heart" style="color: #059669;"></i>
+            <i class="fa-solid fa-heart" style="color: #059669"></i>
             Every small action counts towards a greener planet!
           </p>
         </div>
       </section>
 
       <section class="detailed-summary-section">
-        <h2 class="summary-header"><i class="fa-solid fa-calculator" style="color: #d97706; margin-right: 0.5rem;"></i> Summary Statistics</h2>
+        <h2 class="summary-header">
+          <i
+            class="fa-solid fa-calculator"
+            style="color: #d97706; margin-right: 0.5rem"
+          ></i>
+          Summary Statistics
+        </h2>
         <div class="detailed-summary">
           <div class="summary-card">
             <h3><i class="fa-solid fa-calendar-day"></i> Daily Average</h3>
@@ -125,7 +169,13 @@
       </section>
 
       <section class="activities-section">
-        <h2>Today's Activities</h2>
+        <h2>
+          <i
+            class="fa-solid fa-list-check"
+            style="color: #d97706; margin-right: 0.5rem"
+          ></i>
+          Today's Activities
+        </h2>
         <div class="filter-controls">
           <div class="filter-buttons">
             <button class="filter-btn active" data-category="all">All</button>
@@ -156,7 +206,13 @@
       </section>
 
       <section class="chart-section">
-        <h2>Emissions Breakdown</h2>
+        <h2>
+          <i
+            class="fa-solid fa-chart-pie"
+            style="color: #d97706; margin-right: 0.5rem"
+          ></i>
+          Emissions Breakdown
+        </h2>
         <div class="chart-container">
           <canvas id="emissions-chart"></canvas>
           <div id="chart-fallback" class="chart-fallback" style="display: none">
@@ -168,39 +224,27 @@
         </div>
       </section>
 
-      <!-- <section class="summary-section">
-        <h2 class="summary-header">Summary</h2>
-        <div class="detailed-summary">
-          <div class="summary-card">
-            <h3>Daily Average</h3>
-            <p id="daily-emission">0.0</p>
-            <span>kg CO₂</span>
-          </div>
-          <div class="summary-card">
-            <h3>Weekly Average</h3>
-            <p id="weekly-emission">0.0</p>
-            <span>kg CO₂</span>
-          </div>
-          <div class="summary-card">
-            <h3>Monthly Average</h3>
-            <p id="monthly-emission">0.0</p>
-            <span>kg CO₂</span>
-          </div>
-        </div>
-      </section> -->
-
       <section class="leaderboard-section">
-        <h2>Top 10 Users - Lowest Carbon Footprint</h2>
+        <h2>
+          <i
+            class="fa-solid fa-trophy"
+            style="color: #d97706; margin-right: 0.5rem"
+          ></i>
+          Top Users - Lowest Carbon Footprint
+        </h2>
         <div id="leaderboard-list" class="leaderboard-list">
-          <p>No leaderboard data yet.</p>
+          <p>
+            <i class="fa-solid fa-seedling" style="color: #059669"></i> No
+            leaderboard data yet.
+          </p>
         </div>
       </section>
     </main>
 
     <footer>
       <p>
-        <i class="fa-solid fa-earth-africa"></i> Together, we can make a
-        difference for our planet
+        <i class="fa-solid fa-earth-africa" style="color: #059669"></i>
+        Together, we can make a difference for our planet
       </p>
     </footer>
 
