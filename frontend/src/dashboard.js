@@ -149,6 +149,7 @@ class CarbonFootprintTracker {
 
   updateTotalEmissions() {
     const total = this.getTotalEmissions();
+    console.log(`total: ${total}`);
     const totalCo2El = document.getElementById("total-co2");
     if (totalCo2El) {
       totalCo2El.textContent = total.toFixed(1);
@@ -157,20 +158,20 @@ class CarbonFootprintTracker {
 
   async fetchActivities() {
     try {
-      const res = await fetch("http://localhost:5000/api/logs/user", {
+      const res = await fetch("http://localhost:5000/api/activities", {
         headers: { Authorization: `Bearer ${this.token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch logs");
 
       const data = await res.json();
-      this.activities = data.logs.map((log) => ({
-        _id: log._id,
-        category: log.category || "unknown",
-        activity: log.activity,
-        quantity: log.quantity || 1,
-        unit: log.unit || "unit",
-        co2Emissions: log.emission,
-        timestamp: log.date
+      this.activities = data.map((act) => ({
+        _id: act._id,
+        category: act.category || "unknown",
+        activity: act.activity,
+        quantity: act.quantity || 1,
+        unit: act.unit || "unit",
+        co2Emissions: act.co2Emissions,
+        timestamp: act.timestamp
       }));
     } catch (err) {
       console.error(err);
@@ -225,6 +226,8 @@ class CarbonFootprintTracker {
 
   getCategoryTotals() {
     const totals = { transport: 0, food: 0, energy: 0, waste: 0 };
+    console.log(this.getTodayActivities())
+    console.log(this.activities)
     this.getTodayActivities().forEach((act) => {
       totals[act.category] += act.co2Emissions;
     });
@@ -233,7 +236,7 @@ class CarbonFootprintTracker {
 
   async fetchSummary() {
     try {
-      const res = await fetch("http://localhost:5000/api/logs/summary", {
+      const res = await fetch("http://localhost:5000/api/activities/summary", {
         headers: { Authorization: `Bearer ${this.token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch summary");
@@ -247,12 +250,15 @@ class CarbonFootprintTracker {
 
   async fetchLeaderboard() {
     try {
-      const res = await fetch("http://localhost:5000/api/logs/leaderboard", {
+      const res = await fetch("http://localhost:5000/api/activities/leaderboard", {
         headers: { Authorization: `Bearer ${this.token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch leaderboard");
 
-      this.leaderboard = await res.json();
+      
+      const summary = await res.json();
+      this.leaderboard = summary.leaderboard
+      console.log(`leaderboard: ${JSON.stringify(this.leaderboard)}`)
       this.renderLeaderboard();
     } catch (err) {
       console.error(err);
@@ -280,8 +286,8 @@ class CarbonFootprintTracker {
         (entry, idx) => `
         <div class="leaderboard-item">
           <span class="rank">${idx + 1}.</span>
-          <span class="username">${entry.user}</span>
-          <span class="emission">${entry.totalEmission.toFixed(1)} kg CO₂</span>
+          <span class="username">${entry.username}</span>
+          <span class="emission">${entry.totalEmissions.toFixed(1)} kg CO₂</span>
         </div>
       `
       )
@@ -332,6 +338,7 @@ class CarbonFootprintTracker {
     if (!this.chart) return;
 
     const totals = this.getCategoryTotals();
+    console.log(totals)
     const colorMap = {
       transport: "#3182ce",
       food: "#38a169",
@@ -378,7 +385,7 @@ class CarbonFootprintTracker {
       <div class="activity-item" data-category="${act.category}">
         <span>${act.activity}</span>
         <span>${act.co2Emissions} kg CO₂</span>
-        <button onclick="tracker.deleteActivity('${act._id}')">Delete</button>
+        <button class='delete-btn' onclick="tracker.deleteActivity('${act._id}')">Delete</button>
       </div>
     `
       )
