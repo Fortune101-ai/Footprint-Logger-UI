@@ -138,11 +138,11 @@ p {
 .hero {
   text-align: center;
   padding: 4rem 2rem;
-  background: linear-gradient(135deg, var(--muted) 0%,var(--background) 100%);
+  background: linear-gradient(135deg, var(--muted) 0%, var(--background) 100%);
   border-bottom: 1px solid var(--border);
 }
 
-.hero h1{
+.hero h1 {
   font-size: 3.5rem;
   margin-bottom: 1rem;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -170,11 +170,47 @@ p {
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s ease;
-  box-shadow: var(--shadow-md)
+  box-shadow: var(--shadow-md);
 }
 
 .hero .btn:hover {
   background: var(--secondary);
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  padding: 4rem 2rem;
+  background: var(--background);
+}
+
+.feature {
+  background: var(--card);
+  padding: 2rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  transition: all 0.4s ease;
+  border: 1px solid var(--border);
+}
+
+.feature:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.feature h2 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.feature i {
+  font-size: 1.5rem;
 }
