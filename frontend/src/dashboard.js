@@ -149,7 +149,6 @@ class CarbonFootprintTracker {
 
   updateTotalEmissions() {
     const total = this.getTotalEmissions();
-    console.log(`total: ${total}`);
     const totalCo2El = document.getElementById("total-co2");
     if (totalCo2El) {
       totalCo2El.textContent = total.toFixed(1);
@@ -171,7 +170,7 @@ class CarbonFootprintTracker {
         quantity: act.quantity || 1,
         unit: act.unit || "unit",
         co2Emissions: act.co2Emissions,
-        timestamp: act.timestamp
+        timestamp: act.timestamp,
       }));
     } catch (err) {
       console.error(err);
@@ -226,8 +225,6 @@ class CarbonFootprintTracker {
 
   getCategoryTotals() {
     const totals = { transport: 0, food: 0, energy: 0, waste: 0 };
-    console.log(this.getTodayActivities())
-    console.log(this.activities)
     this.getTodayActivities().forEach((act) => {
       totals[act.category] += act.co2Emissions;
     });
@@ -250,15 +247,16 @@ class CarbonFootprintTracker {
 
   async fetchLeaderboard() {
     try {
-      const res = await fetch("http://localhost:5000/api/activities/leaderboard", {
-        headers: { Authorization: `Bearer ${this.token}` },
-      });
+      const res = await fetch(
+        "http://localhost:5000/api/activities/leaderboard",
+        {
+          headers: { Authorization: `Bearer ${this.token}` },
+        }
+      );
       if (!res.ok) throw new Error("Failed to fetch leaderboard");
 
-      
       const summary = await res.json();
-      this.leaderboard = summary.leaderboard
-      console.log(`leaderboard: ${JSON.stringify(this.leaderboard)}`)
+      this.leaderboard = summary.leaderboard;
       this.renderLeaderboard();
     } catch (err) {
       console.error(err);
@@ -287,7 +285,9 @@ class CarbonFootprintTracker {
         <div class="leaderboard-item">
           <span class="rank">${idx + 1}.</span>
           <span class="username">${entry.username}</span>
-          <span class="emission">${entry.totalEmissions.toFixed(1)} kg CO₂</span>
+          <span class="emission">${entry.totalEmissions.toFixed(
+            1
+          )} kg CO₂</span>
         </div>
       `
       )
@@ -338,7 +338,6 @@ class CarbonFootprintTracker {
     if (!this.chart) return;
 
     const totals = this.getCategoryTotals();
-    console.log(totals)
     const colorMap = {
       transport: "#3182ce",
       food: "#38a169",
