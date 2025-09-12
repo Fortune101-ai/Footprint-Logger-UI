@@ -8,6 +8,7 @@ const {
   deleteActivity,
   getSummary,
   getUserSummary,
+  getUserStreak,
 } = require("../controllers/activity_controller");
 const authMiddleware = require("../middleware/auth");
 
@@ -17,5 +18,6 @@ router.get("/options", authMiddleware, getActivityOptions);
 router.delete("/:id", authMiddleware, deleteActivity);
 router.get("/summary", authMiddleware, getUserSummary);
 router.get("/leaderboard", authMiddleware, getSummary);
+router.get("/streak", authMiddleware, getUserStreak);
 
 module.exports = router;
