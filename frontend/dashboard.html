@@ -86,14 +86,41 @@
 
       <section class="summary-section">
         <div class="total-emissions" id="total-emissions">
-          <h2>Today's Emissions</h2>
+          <h2><i class="fa-solid fa-gauge-high" style="color: #d97706; margin-right: 0.5rem;"></i> Today's Emissions</h2>
           <div class="emissions-display">
             <span id="total-co2">0.0</span>
             <span class="unit">kg CO₂</span>
           </div>
           <p class="impact-message">
+            <i class="fa-solid fa-heart" style="color: #059669;"></i>
             Every small action counts towards a greener planet!
           </p>
+        </div>
+      </section>
+
+      <section class="detailed-summary-section">
+        <h2 class="summary-header"><i class="fa-solid fa-calculator" style="color: #d97706; margin-right: 0.5rem;"></i> Summary Statistics</h2>
+        <div class="detailed-summary">
+          <div class="summary-card">
+            <h3><i class="fa-solid fa-calendar-day"></i> Daily Average</h3>
+            <p id="daily-emission">0.0</p>
+            <span>kg C0<sub>2</sub></span>
+          </div>
+          <div class="summary-card">
+            <h3><i class="fa-solid fa-calendar-week"></i> Weekly Average</h3>
+            <p id="weekly-emission">0.0</p>
+            <span>kg C0<sub>2</sub></span>
+          </div>
+          <div class="summary-card">
+            <h3><i class="fa-solid fa-calendar-alt"></i> Monthly Average</h3>
+            <p id="monthly-emission">0.0</p>
+            <span>kg C0<sub>2</sub></span>
+          </div>
+          <div class="summary-card highlight">
+            <h3><i class="fa-solid fa-globe"></i> All-Time Average</h3>
+            <p id="alltime-emission">0.0</p>
+            <span>kg C0<sub>2</sub></span>
+          </div>
         </div>
       </section>
 
@@ -141,7 +168,7 @@
         </div>
       </section>
 
-      <section class="summary-section">
+      <!-- <section class="summary-section">
         <h2 class="summary-header">Summary</h2>
         <div class="detailed-summary">
           <div class="summary-card">
@@ -160,7 +187,7 @@
             <span>kg CO₂</span>
           </div>
         </div>
-      </section>
+      </section> -->
 
       <section class="leaderboard-section">
         <h2>Top 10 Users - Lowest Carbon Footprint</h2>
