@@ -22,7 +22,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/activities", activityRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("Carbon Footprint Logger API!");
 });
 
 app.use((req, res) => res.status(404).json({ message: "Route Not Found" }));
