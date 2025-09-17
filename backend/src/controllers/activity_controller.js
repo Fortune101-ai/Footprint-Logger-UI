@@ -1,4 +1,5 @@
 const Activity = require("../models/Activity");
+const logger = require("../config/logger");
 
 const emissionFactors = {
   transport: {
@@ -40,6 +41,11 @@ const addActivity = async (req, res) => {
     const { category, activity, quantity } = req.body;
 
     if (!category || !activity || !quantity) {
+      logger.warn(
+        `Bad request from User: ${
+          req.user?.id || "unknown"
+        } - Missing fields: category=${category}, activity=${activity}, quantity=${quantity}`
+      );
       return res
         .status(400)
         .json({ message: "Category, activity, and quantity are required" });
@@ -47,6 +53,11 @@ const addActivity = async (req, res) => {
 
     const factorData = emissionFactors[category]?.[activity];
     if (!factorData) {
+      logger.warn(
+        `Invalid activity for User: ${
+          req.user?.id || "unknown"
+        } - category=${category}, activity=${activity}`
+      );
       return res.status(400).json({ message: "Invalid category or activity" });
     }
 
@@ -62,9 +73,12 @@ const addActivity = async (req, res) => {
     });
 
     await newActivity.save();
+    logger.info(`Activity added: ${newActivity._id} by User: ${req.user.id}`);
     res.status(201).json(newActivity);
   } catch (error) {
-    console.error(error);
+    logger.error(`Error adding activity: ${error.message}`, {
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Internal server error adding activity" });
   }
 };
@@ -74,8 +88,13 @@ const getUserActivities = async (req, res) => {
     const activities = await Activity.find({ user: req.user.id }).sort({
       timestamp: -1,
     });
+
+    logger.info(`Fetched activities for User: ${req.user.id}`);
     res.status(200).json(activities);
   } catch (error) {
+    logger.error(`Error fetching activities: ${error.message}`, {
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Error fetching activities" });
   }
 };
@@ -84,13 +103,22 @@ const getActivityOptions = async (req, res) => {
   try {
     const { category } = req.query;
     if (!category || !emissionFactors[category]) {
+      logger.warn(
+        `Invalid category request from User: ${
+          req.user?.id || "unknown"
+        } - category=${category}`
+      );
       return res.status(400).json({ message: "Invalid category" });
     }
 
     const options = Object.keys(emissionFactors[category]);
+
+    logger.info(`Fetched activity options for category: ${category}`);
     res.status(200).json(options);
   } catch (error) {
-    console.error(error);
+    logger.error(`Error fetching activity options: ${error.message}`, {
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Error fetching activity options" });
   }
 };
@@ -102,10 +130,19 @@ const deleteActivity = async (req, res) => {
       user: req.user.id,
     });
 
-    if (!activity)
+    if (!activity) {
+      logger.warn(
+        `Delete failed for User: ${req.user.id} - Activity not found with id=${req.params.id}`
+      );
       return res.status(404).json({ message: "Activity not found" });
+    }
+
+    logger.info(`Activity deleted: ${activity._id} by User: ${req.user.id}`);
     res.json({ message: "Activity deleted" });
   } catch (error) {
+    logger.error(`Error deleting activity: ${error.message}`, {
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Error deleting activity" });
   }
 };
@@ -138,8 +175,12 @@ const getSummary = async (req, res) => {
     const avgEmission =
       allActivities.length > 0 ? totalEmissionSum / allActivities.length : 0;
 
+    logger.info("Fetched global summary");
     res.json({ leaderboard: allActivities, averageEmissions: avgEmission });
   } catch (error) {
+    logger.error(`Error fetching summary: ${error.message}`, {
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Error fetching summary" });
   }
 };
@@ -165,8 +206,12 @@ const getUserSummary = async (req, res) => {
       .filter((a) => new Date(a.timestamp) >= last30Days)
       .reduce((sum, a) => sum + a.co2Emissions, 0);
 
+    logger.info(`Fetched summary for User: ${req.user.id}`);
     res.json({ daily, weekly, monthly });
   } catch (error) {
+    logger.error(`Error fetching user summary: ${error.message}`, {
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Error fetching user summary" });
   }
 };
@@ -178,6 +223,10 @@ const getUserStreak = async (req, res) => {
     });
 
     if (activities.length === 0) {
+      logger.warn(
+        `No activities found for User: ${req.user.id} when fetching streak`
+      );
+
       return res.json({ currentStreak: 0, longestStreak: 0 });
     }
 
@@ -223,8 +272,12 @@ const getUserStreak = async (req, res) => {
       currentStreak = streakCount;
     }
 
+    logger.info(`Fetched streak for User: ${req.user.id}`);
     res.json({ currentStreak, longestStreak });
   } catch (error) {
+    logger.error(`Error fetching user streak: ${error.message}`, {
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Error fetching user streak" });
   }
 };
@@ -234,6 +287,10 @@ const getPersonalizedAnalysis = async (req, res) => {
     const activities = await Activity.find({ user: req.user.id });
 
     if (activities.length === 0) {
+      logger.warn(
+        `No activities found for User: ${req.user.id} when fetching personalized analysis`
+      );
+
       return res.json({
         highestCategory: null,
         tip: "Start tracking your activities and discover tips tailored to your journey!",
@@ -273,6 +330,7 @@ const getPersonalizedAnalysis = async (req, res) => {
     const randomTip =
       categoryTips[Math.floor(Math.random() * categoryTips.length)];
 
+    logger.info(`Fetched personalized analysis for User: ${req.user.id}`);
     res.json({
       highestCategory,
       categoryEmissions: categoryEmissions[highestCategory],
@@ -280,6 +338,9 @@ const getPersonalizedAnalysis = async (req, res) => {
       totalCategories: Object.keys(categoryEmissions).length,
     });
   } catch (error) {
+    logger.error(`Error fetching personalized analysis: ${error.message}`, {
+      stack: error.stack,
+    });
     res.status(500).json({
       message: "Error fetching personalized analysis",
     });
