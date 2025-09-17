@@ -298,6 +298,20 @@ class CarbonFootprintTracker {
     }
   }
 
+  async fetchPersonalizedAnalysis() {
+    try {
+      const res = await fetch(`${window.ENV.BACKEND_URL}/api/activities/analysis`, {
+        headers: { Authorization: `Bearer ${this.token}` },
+      })
+      if (!res.ok) throw new Error("Failed to fetch personalized analysis")
+
+      this.personalizedAnalysis = await res.json()
+      this.renderPersonalizedTip()
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   renderSummary() {
     document.getElementById("daily-emission").textContent =
       this.summary.daily.toFixed(1);
@@ -450,7 +464,7 @@ class CarbonFootprintTracker {
     this.renderLeaderboard();
     this.renderStreak();
     this.renderAverageEmissions();
-    this.renderPersonalizedAnalysis();
+    this.renderPersonalizedTip();
     this.updateTotalEmissions();
   }
 
