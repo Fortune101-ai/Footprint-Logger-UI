@@ -815,6 +815,90 @@ input:focus {
   font-family: "Playfair Display", serif;
 }
 
+.personalized-tips-section {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, var(--muted) 0%, var(--background) 100%);
+  border: 2px solid var(--border);
+  border-left: 4px solid var(--primary);
+}
+
+.tips-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.highest-category-card,
+.tip-card {
+  background: var(--background);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.highest-category-card:hover,
+.tip-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.highest-category-card h3,
+.tip-card h3 {
+  font-size: 1rem;
+  color: var(--muted-foreground);
+  margin-bottom: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.category-display {
+  text-align: center;
+  padding: 1rem;
+}
+
+.category-display strong {
+  font-size: 1.5rem;
+  color: var(--primary);
+  font-family: "Playfair Display", serif;
+  display: block;
+  margin-bottom: 0.5rem;
+  text-transform: capitalize;
+}
+
+.category-emissions {
+  font-size: 1.1rem;
+  color: var(--destructive);
+  font-weight: 600;
+  background: rgba(220, 38, 38, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: calc(var(--radius) * 2);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.loading-text {
+  color: var(--muted-foreground);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+.tip-text {
+  background: var(--muted);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  border-left: 4px solid var(--success);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--foreground);
+  font-weight: 500;
+  margin: 0;
+}
+
 .footer,
 footer {
   text-align: center;
