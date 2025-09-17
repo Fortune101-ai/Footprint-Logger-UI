@@ -1,5 +1,3 @@
-
-
 class CarbonFootprintTracker {
   constructor() {
     this.activities = [];
@@ -11,6 +9,11 @@ class CarbonFootprintTracker {
     this.summary = { daily: 0, weekly: 0, monthly: 0 };
     this.streak = { currentStreak: 0, longestStreak: 0 };
     this.averageEmissions = 0;
+    this.personalizedAnalysis = {
+      highestCategory: null,
+      tip: "",
+      categoryEmissions: 0,
+    };
 
     this.init();
   }
@@ -22,6 +25,7 @@ class CarbonFootprintTracker {
     await this.fetchSummary();
     await this.fetchLeaderboard();
     await this.fetchStreak();
+    await this.fetchPersonalizedAnalysis();
     this.initChart();
     this.render();
   }
@@ -186,10 +190,13 @@ class CarbonFootprintTracker {
 
   async deleteActivity(id) {
     try {
-      const res = await fetch(`${window.ENV.BACKEND_URL}/api/activities/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${this.token}` },
-      });
+      const res = await fetch(
+        `${window.ENV.BACKEND_URL}/api/activities/${id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${this.token}` },
+        }
+      );
       if (!res.ok) throw new Error("Failed to delete activity");
 
       this.activities = this.activities.filter((act) => act._id !== id);
@@ -239,9 +246,12 @@ class CarbonFootprintTracker {
 
   async fetchSummary() {
     try {
-      const res = await fetch(`${window.ENV.BACKEND_URL}/api/activities/summary`, {
-        headers: { Authorization: `Bearer ${this.token}` },
-      });
+      const res = await fetch(
+        `${window.ENV.BACKEND_URL}/api/activities/summary`,
+        {
+          headers: { Authorization: `Bearer ${this.token}` },
+        }
+      );
       if (!res.ok) throw new Error("Failed to fetch summary");
 
       this.summary = await res.json();
@@ -332,7 +342,7 @@ class CarbonFootprintTracker {
           <span class="username">${entry.username}</span>
           <span class="emission">${entry.totalEmissions.toFixed(
             1
-          )} kg CO₂</span>
+          )} kg CO<sub>2</sub></span>
           ${idx === 0 ? '<span class="badge gold">🏆</span>' : ""}
           ${idx === 1 ? '<span class="badge silver">🥈</span>' : ""}
           ${idx === 2 ? '<span class="badge bronze">🥉</span>' : ""}
@@ -340,6 +350,27 @@ class CarbonFootprintTracker {
       `
       )
       .join("");
+  }
+
+  renderPersonalizedTip() {
+    const tipContainer = document.getElementById("personalized-tip");
+    const categoryContainer = document.getElementById("highest-category");
+
+    if (tipContainer) {
+      tipContainer.textContent = this.personalizedAnalysis.tip;
+    }
+
+    if (categoryContainer && this.personalizedAnalysis.highestCategory) {
+      categoryContainer.innerHTML = `
+        <strong>${
+          this.personalizedAnalysis.highestCategory.charAt(0).toUpperCase() +
+          this.personalizedAnalysis.highestCategory.slice(1)
+        }</strong>
+        <span class="category-emissions">${this.personalizedAnalysis.categoryEmissions.toFixed(
+          1
+        )} kg CO<sub>2</sub></span>
+      `;
+    }
   }
 
   initChart() {
@@ -374,7 +405,7 @@ class CarbonFootprintTracker {
                   total > 0 ? ((value / total) * 100).toFixed(1) : 0;
                 return `${ctx.label}: ${value.toFixed(
                   1
-                )} kg CO₂ (${percentage}%)`;
+                )} kg CO<sub>2</sub> (${percentage}%)`;
               },
             },
           },
@@ -419,6 +450,7 @@ class CarbonFootprintTracker {
     this.renderLeaderboard();
     this.renderStreak();
     this.renderAverageEmissions();
+    this.renderPersonalizedAnalysis();
     this.updateTotalEmissions();
   }
 
