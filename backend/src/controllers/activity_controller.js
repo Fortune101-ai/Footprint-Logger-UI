@@ -229,6 +229,63 @@ const getUserStreak = async (req, res) => {
   }
 };
 
+const getPersonalizedAnalysis = async (req, res) => {
+  try {
+    const activities = await Activity.find({ user: req.user.id });
+
+    if (activities.length === 0) {
+      return res.json({
+        highestCategory: null,
+        tip: "Start tracking your activities and discover tips tailored to your journey!",
+      });
+    }
+
+    const categoryEmissions = {};
+    activities.forEach((activity) => {
+      if (!categoryEmissions[activity.category]) {
+        categoryEmissions[activity.category] = 0;
+      }
+      categoryEmissions[activity.category] += activity.co2Emissions;
+    });
+
+    const highestCategory = Object.keys(categoryEmissions).reduce((a, b) =>
+      categoryEmissions[a] > categoryEmissions[b] ? a : b
+    );
+
+    const tips = {
+      transport: [
+        "Walk or cycle for short trips - it's healthy and can save up to 2kg C02 each week!",
+      ],
+      energy: [
+        "Switch to LED bulbs and unplug devices when not in use - save 0.5kg CO2 every day",
+      ],
+      food: [
+        "Go meat-free one day a week and cut 3-5kg CO2 from your footprint.",
+      ],
+      waste: [
+        "Recycle and compost organic waste - reduce about 1kg CO2 weekly.",
+      ],
+    };
+
+    const categoryTips = tips[highestCategory] || [
+      "Keep tracking your activities for more personalized tips!",
+    ];
+    const randomTip =
+      categoryTips[Math.floor(Math.random() * categoryTips.length)];
+
+    res.json({
+      highestCategory,
+      categoryEmissions: categoryEmissions[highestCategory],
+      tip: randomTip,
+      totalCategories: Object.keys(categoryEmissions).length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching personalized analysis",
+    });
+  }
+};
+
 module.exports = {
   addActivity,
   getUserActivities,
@@ -237,4 +294,5 @@ module.exports = {
   getSummary,
   getUserSummary,
   getUserStreak,
+  getPersonalizedAnalysis,
 };
