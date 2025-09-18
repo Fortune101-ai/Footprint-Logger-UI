@@ -1,5 +1,5 @@
-const Activity = require("../models/Activity");
-const logger = require("../config/logger");
+import Activity from "../models/Activity.js";
+import logger from "../config/logger.js";
 
 const emissionFactors = {
   transport: {
@@ -347,7 +347,7 @@ const getPersonalizedAnalysis = async (req, res) => {
   }
 };
 
-module.exports = {
+export{
   addActivity,
   getUserActivities,
   getActivityOptions,

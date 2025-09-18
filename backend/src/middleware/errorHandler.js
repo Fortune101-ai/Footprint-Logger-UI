@@ -6,4 +6,4 @@ const errorHandler = (err, req, res, next) => {
     .json({ message: err.message || "Internal Server Error" });
 };
 
-module.exports = errorHandler;
+export default errorHandler;

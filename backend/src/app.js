@@ -1,14 +1,15 @@
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
-const connectToDatabase = require("./config/db");
-const errorHandler = require("./middleware/errorHandler");
-const authRoutes = require("./routes/auth_routes");
-const activityRoutes = require("./routes/activity_routes");
-const helmet = require("helmet");
+import express from "express";
+import cors from "cors";
+import "dotenv/config"
+import connectToDatabase from "./config/db.js";
+import errorHandler from "./middleware/errorHandler.js";
+import authRoutes from "./routes/auth_routes.js";
+import activityRoutes from "./routes/activity_routes.js";
+import helmet from "helmet";
+import logger from "./utils/logger.js";
 
 connectToDatabase().catch((err) => {
-  console.error("Failed to connect to the database", err);
+  logger.error("Failed to connect to the database", err);
   process.exit(1);
 });
 
@@ -22,12 +23,16 @@ app.use("/api/auth", authRoutes);
 app.use("/api/activities", activityRoutes);
 
 app.get("/", (req, res) => {
+  logger.info("Root route accessed");
   res.send("Carbon Footprint Logger API!");
 });
 
-app.use((req, res) => res.status(404).json({ message: "Route Not Found" }));
+app.use((req, res) => {
+  logger.warn("Route not found", { url: req.originalUrl });
+  res.status(404).json({ message: "Route Not Found" });
+});
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  logger.info(`Server is running on port ${PORT}`);
 });

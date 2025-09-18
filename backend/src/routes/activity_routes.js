@@ -1,7 +1,7 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const {
+import {
   addActivity,
   getUserActivities,
   getActivityOptions,
@@ -10,8 +10,8 @@ const {
   getUserSummary,
   getUserStreak,
   getPersonalizedAnalysis,
-} = require("../controllers/activity_controller");
-const authMiddleware = require("../middleware/auth");
+} from "../controllers/activity_controller.js";
+import authMiddleware from "../middleware/auth.js";
 
 router.post("/", authMiddleware, addActivity);
 router.get("/", authMiddleware, getUserActivities);
@@ -22,4 +22,4 @@ router.get("/leaderboard", authMiddleware, getSummary);
 router.get("/streak", authMiddleware, getUserStreak);
 router.get("/analysis", authMiddleware, getPersonalizedAnalysis);
 
-module.exports = router;
+export default router;

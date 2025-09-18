@@ -1,7 +1,7 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const asyncRouteWrapper = require("../utils/asyncHandler");
-const User = require("../models/User");
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import asyncRouteWrapper from "../utils/asyncHandler.js";
+import User from "../models/User.js";
 
 const sign = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -56,4 +56,4 @@ const getProfile = asyncRouteWrapper(async (req, res) => {
   res.status(200).json(user);
 });
 
-module.exports = { register, login, getProfile };
+export { register, login, getProfile };
