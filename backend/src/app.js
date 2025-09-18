@@ -27,6 +27,12 @@ app.get('/', (req, res) => {
   res.send('Carbon Footprint Logger API!');
 });
 
+app.get('/health',(req,res)=>{
+  res.status(200).json({
+    status: 'OK', timestamp: new Date().toISOString(), uptime: process.uptime()
+  });
+});
+
 app.use((req, res) => {
   logger.warn('Route not found', { url: req.originalUrl });
   res.status(404).json({ message: 'Route Not Found' });
