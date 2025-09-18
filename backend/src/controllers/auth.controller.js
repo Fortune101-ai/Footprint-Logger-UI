@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import asyncRouteWrapper from "../utils/asyncHandler.js";
-import User from "../models/User.js";
+import asyncRouteWrapper from "#utils/asyncRouteWrapper.js";
+import User from "#models/User.js";
 
 const sign = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });

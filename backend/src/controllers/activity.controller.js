@@ -1,5 +1,5 @@
-import Activity from "../models/Activity.js";
-import logger from "../config/logger.js";
+import Activity from "#models/activity.model.js";
+import logger from "#config/logger.js";
 
 const emissionFactors = {
   transport: {

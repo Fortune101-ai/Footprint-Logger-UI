@@ -1,8 +1,17 @@
 {
-  "name": "footprint logger backend",
+  "name": "footprint-logger-backend",
   "version": "1.0.0",
   "main": "./src/app.js",
   "type": "module",
+  "imports":{
+    "#config/*": "./src/config/*",
+    "#controllers/*": "./src/controllers/*",
+    "#middleware/*": "./src/middleware/*",
+    "#models/*": "./src/models/*",
+    "#routes/*": "./src/routes/*",
+    "#utils/*": "./src/utils/*"
+
+  },
   "scripts": {
     "start": "node ./src/app.js",
     "dev": "nodemon ./src/app.js"

@@ -1,12 +1,12 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config"
-import connectToDatabase from "./config/db.js";
-import errorHandler from "./middleware/errorHandler.middleware.js";
-import authRoutes from "./routes/auth.routes.js";
-import activityRoutes from "./routes/activity.routes.js";
+import connectToDatabase from "#config/db.js";
+import errorHandler from "#middleware/errorHandler.middleware.js";
+import authRoutes from "#routes/auth.routes.js";
+import activityRoutes from "#routes/activity.routes.js";
 import helmet from "helmet";
-import logger from "./utils/logger.js";
+import logger from "#utils/logger.js";
 
 connectToDatabase().catch((err) => {
   logger.error("Failed to connect to the database", err);
