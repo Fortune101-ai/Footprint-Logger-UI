@@ -3,18 +3,21 @@
   "version": "1.0.0",
   "main": "./src/app.js",
   "type": "module",
-  "imports":{
+  "imports": {
     "#config/*": "./src/config/*",
     "#controllers/*": "./src/controllers/*",
     "#middleware/*": "./src/middleware/*",
     "#models/*": "./src/models/*",
     "#routes/*": "./src/routes/*",
     "#utils/*": "./src/utils/*"
-
   },
   "scripts": {
     "start": "node ./src/app.js",
-    "dev": "nodemon ./src/app.js"
+    "dev": "nodemon ./src/app.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format-check": "prettier --check ."
   },
   "keywords": [],
   "author": "",
@@ -31,6 +34,11 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "@eslint/js": "^9.35.0",
+    "eslint": "^9.35.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2"
   }
 }

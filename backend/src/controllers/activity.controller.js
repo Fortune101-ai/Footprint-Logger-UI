@@ -1,38 +1,38 @@
-import Activity from "#models/activity.model.js";
-import logger from "#config/logger.js";
+import Activity from '#models/activity.model.js';
+import logger from '#config/logger.js';
 
 const emissionFactors = {
   transport: {
-    "Car (petrol)": { factor: 0.148, unit: "km" },
-    "Car (diesel)": { factor: 0.18, unit: "km" },
-    Bus: { factor: 0.068, unit: "km" },
-    Train: { factor: 0.014, unit: "km" },
-    "Plane (domestic)": { factor: 0.18, unit: "km" },
-    "Plane (international)": { factor: 0.15, unit: "km" },
-    Motorcycle: { factor: 0.072, unit: "km" },
-    Bicycle: { factor: 0, unit: "km" },
+    'Car (petrol)': { factor: 0.148, unit: 'km' },
+    'Car (diesel)': { factor: 0.18, unit: 'km' },
+    Bus: { factor: 0.068, unit: 'km' },
+    Train: { factor: 0.014, unit: 'km' },
+    'Plane (domestic)': { factor: 0.18, unit: 'km' },
+    'Plane (international)': { factor: 0.15, unit: 'km' },
+    Motorcycle: { factor: 0.072, unit: 'km' },
+    Bicycle: { factor: 0, unit: 'km' },
   },
   energy: {
-    Electricity: { factor: 0.87, unit: "kWh" },
-    "Natural gas": { factor: 0.2, unit: "kWh" },
-    "Heating oil": { factor: 2.7, unit: "liters" },
-    Coal: { factor: 2.4, unit: "kg" },
+    Electricity: { factor: 0.87, unit: 'kWh' },
+    'Natural gas': { factor: 0.2, unit: 'kWh' },
+    'Heating oil': { factor: 2.7, unit: 'liters' },
+    Coal: { factor: 2.4, unit: 'kg' },
   },
   food: {
-    Beef: { factor: 27, unit: "kg" },
-    Pork: { factor: 12, unit: "kg" },
-    Chicken: { factor: 6, unit: "kg" },
-    Fish: { factor: 4, unit: "kg" },
-    "Dairy products": { factor: 1.3, unit: "kg" },
-    Eggs: { factor: 1.7, unit: "kg" },
-    Rice: { factor: 2.7, unit: "kg" },
-    Vegetables: { factor: 0.4, unit: "kg" },
+    Beef: { factor: 27, unit: 'kg' },
+    Pork: { factor: 12, unit: 'kg' },
+    Chicken: { factor: 6, unit: 'kg' },
+    Fish: { factor: 4, unit: 'kg' },
+    'Dairy products': { factor: 1.3, unit: 'kg' },
+    Eggs: { factor: 1.7, unit: 'kg' },
+    Rice: { factor: 2.7, unit: 'kg' },
+    Vegetables: { factor: 0.4, unit: 'kg' },
   },
   waste: {
-    "General waste": { factor: 0.5, unit: "kg" },
-    "Plastic waste": { factor: 1.8, unit: "kg" },
-    "Paper waste": { factor: 0.9, unit: "kg" },
-    "Food waste": { factor: 0.3, unit: "kg" },
+    'General waste': { factor: 0.5, unit: 'kg' },
+    'Plastic waste': { factor: 1.8, unit: 'kg' },
+    'Paper waste': { factor: 0.9, unit: 'kg' },
+    'Food waste': { factor: 0.3, unit: 'kg' },
   },
 };
 
@@ -43,22 +43,22 @@ const addActivity = async (req, res) => {
     if (!category || !activity || !quantity) {
       logger.warn(
         `Bad request from User: ${
-          req.user?.id || "unknown"
+          req.user?.id || 'unknown'
         } - Missing fields: category=${category}, activity=${activity}, quantity=${quantity}`
       );
       return res
         .status(400)
-        .json({ message: "Category, activity, and quantity are required" });
+        .json({ message: 'Category, activity, and quantity are required' });
     }
 
     const factorData = emissionFactors[category]?.[activity];
     if (!factorData) {
       logger.warn(
         `Invalid activity for User: ${
-          req.user?.id || "unknown"
+          req.user?.id || 'unknown'
         } - category=${category}, activity=${activity}`
       );
-      return res.status(400).json({ message: "Invalid category or activity" });
+      return res.status(400).json({ message: 'Invalid category or activity' });
     }
 
     const co2Emissions = parseFloat((factorData.factor * quantity).toFixed(2));
@@ -79,7 +79,7 @@ const addActivity = async (req, res) => {
     logger.error(`Error adding activity: ${error.message}`, {
       stack: error.stack,
     });
-    res.status(500).json({ message: "Internal server error adding activity" });
+    res.status(500).json({ message: 'Internal server error adding activity' });
   }
 };
 
@@ -95,7 +95,7 @@ const getUserActivities = async (req, res) => {
     logger.error(`Error fetching activities: ${error.message}`, {
       stack: error.stack,
     });
-    res.status(500).json({ message: "Error fetching activities" });
+    res.status(500).json({ message: 'Error fetching activities' });
   }
 };
 
@@ -105,10 +105,10 @@ const getActivityOptions = async (req, res) => {
     if (!category || !emissionFactors[category]) {
       logger.warn(
         `Invalid category request from User: ${
-          req.user?.id || "unknown"
+          req.user?.id || 'unknown'
         } - category=${category}`
       );
-      return res.status(400).json({ message: "Invalid category" });
+      return res.status(400).json({ message: 'Invalid category' });
     }
 
     const options = Object.keys(emissionFactors[category]);
@@ -119,7 +119,7 @@ const getActivityOptions = async (req, res) => {
     logger.error(`Error fetching activity options: ${error.message}`, {
       stack: error.stack,
     });
-    res.status(500).json({ message: "Error fetching activity options" });
+    res.status(500).json({ message: 'Error fetching activity options' });
   }
 };
 
@@ -134,34 +134,34 @@ const deleteActivity = async (req, res) => {
       logger.warn(
         `Delete failed for User: ${req.user.id} - Activity not found with id=${req.params.id}`
       );
-      return res.status(404).json({ message: "Activity not found" });
+      return res.status(404).json({ message: 'Activity not found' });
     }
 
     logger.info(`Activity deleted: ${activity._id} by User: ${req.user.id}`);
-    res.json({ message: "Activity deleted" });
+    res.json({ message: 'Activity deleted' });
   } catch (error) {
     logger.error(`Error deleting activity: ${error.message}`, {
       stack: error.stack,
     });
-    res.status(500).json({ message: "Error deleting activity" });
+    res.status(500).json({ message: 'Error deleting activity' });
   }
 };
 
 const getSummary = async (req, res) => {
   try {
     const allActivities = await Activity.aggregate([
-      { $group: { _id: "$user", totalEmissions: { $sum: "$co2Emissions" } } },
+      { $group: { _id: '$user', totalEmissions: { $sum: '$co2Emissions' } } },
       {
         $lookup: {
-          from: "users",
-          localField: "_id",
-          foreignField: "_id",
-          as: "userInfo",
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'userInfo',
         },
       },
       {
         $project: {
-          username: { $arrayElemAt: ["$userInfo.username", 0] },
+          username: { $arrayElemAt: ['$userInfo.username', 0] },
           totalEmissions: 1,
         },
       },
@@ -175,13 +175,13 @@ const getSummary = async (req, res) => {
     const avgEmission =
       allActivities.length > 0 ? totalEmissionSum / allActivities.length : 0;
 
-    logger.info("Fetched global summary");
+    logger.info('Fetched global summary');
     res.json({ leaderboard: allActivities, averageEmissions: avgEmission });
   } catch (error) {
     logger.error(`Error fetching summary: ${error.message}`, {
       stack: error.stack,
     });
-    res.status(500).json({ message: "Error fetching summary" });
+    res.status(500).json({ message: 'Error fetching summary' });
   }
 };
 
@@ -212,7 +212,7 @@ const getUserSummary = async (req, res) => {
     logger.error(`Error fetching user summary: ${error.message}`, {
       stack: error.stack,
     });
-    res.status(500).json({ message: "Error fetching user summary" });
+    res.status(500).json({ message: 'Error fetching user summary' });
   }
 };
 
@@ -278,7 +278,7 @@ const getUserStreak = async (req, res) => {
     logger.error(`Error fetching user streak: ${error.message}`, {
       stack: error.stack,
     });
-    res.status(500).json({ message: "Error fetching user streak" });
+    res.status(500).json({ message: 'Error fetching user streak' });
   }
 };
 
@@ -293,7 +293,7 @@ const getPersonalizedAnalysis = async (req, res) => {
 
       return res.json({
         highestCategory: null,
-        tip: "Start tracking your activities and discover tips tailored to your journey!",
+        tip: 'Start tracking your activities and discover tips tailored to your journey!',
       });
     }
 
@@ -314,18 +314,18 @@ const getPersonalizedAnalysis = async (req, res) => {
         "Walk or cycle for short trips - it's healthy and can save up to 2kg C02 each week!",
       ],
       energy: [
-        "Switch to LED bulbs and unplug devices when not in use - save 0.5kg CO2 every day",
+        'Switch to LED bulbs and unplug devices when not in use - save 0.5kg CO2 every day',
       ],
       food: [
-        "Go meat-free one day a week and cut 3-5kg CO2 from your footprint.",
+        'Go meat-free one day a week and cut 3-5kg CO2 from your footprint.',
       ],
       waste: [
-        "Recycle and compost organic waste - reduce about 1kg CO2 weekly.",
+        'Recycle and compost organic waste - reduce about 1kg CO2 weekly.',
       ],
     };
 
     const categoryTips = tips[highestCategory] || [
-      "Keep tracking your activities for more personalized tips!",
+      'Keep tracking your activities for more personalized tips!',
     ];
     const randomTip =
       categoryTips[Math.floor(Math.random() * categoryTips.length)];
@@ -342,12 +342,12 @@ const getPersonalizedAnalysis = async (req, res) => {
       stack: error.stack,
     });
     res.status(500).json({
-      message: "Error fetching personalized analysis",
+      message: 'Error fetching personalized analysis',
     });
   }
 };
 
-export{
+export {
   addActivity,
   getUserActivities,
   getActivityOptions,

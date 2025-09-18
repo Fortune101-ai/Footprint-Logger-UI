@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const activitySchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   category: { type: String, required: true },
   activity: { type: String, required: true },
   quantity: { type: Number, required: true },
@@ -10,6 +10,4 @@ const activitySchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now },
 });
 
-
-
-export default mongoose.model("Activity", activitySchema);
+export default mongoose.model('Activity', activitySchema);
