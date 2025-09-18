@@ -17,7 +17,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format-check": "prettier --check ."
+    "format-check": "prettier --check .",
+    "start:prod":"./scripts/prod.sh",
+    "stop:prod": "docker compose -f docker-compose.prod.yml down"
   },
   "keywords": [],
   "author": "",
