@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import asyncRouteWrapper from '#utils/asyncRouteWrapper.js';
+import asyncRouteWrapper from '#utils/asyncHandler.js';
 import User from '#models/User.js';
 
 const sign = (id) =>
