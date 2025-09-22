@@ -12,6 +12,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
 
+    <!-- <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script> -->
+    <!-- <script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io("http://localhost:5000", {
+  transports: ["websocket", "polling"],
+});
+</script> -->
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+  const socket = io("http://localhost:5000");
+</script>
+
     <link rel="stylesheet" href="styles/styles.css" />
   </head>
   <body>
@@ -47,6 +60,11 @@
       </h1>
       <p>Track your carbon footprint and make a difference every day.</p>
     </header>
+
+     <div id="real-time-tip" class="real-time-tip">
+      <i class="fa-solid fa-bell"></i>
+      <span class="tip-message"></span>
+    </div>
 
     <main class="container">
       <section class="input-section">
@@ -86,6 +104,47 @@
 
           <button type="submit" class="add-btn">Add Activity</button>
         </form>
+      </section>
+
+       <section class="weekly-goals-section">
+        <h2><i class="fa-solid fa-target" style="color: #d97706; margin-right: 0.5rem;"></i>Weekly Goals</h2>
+        <div class="goals-container">
+          <div class="goal-setting-card">
+            <h3><i class="fa-solid fa-bullseye"></i> Set Weekly Target</h3>
+            <form id="weekly-goal-form">
+              <div class="goal-input-group">
+                <input id="target-reduction" type="number" step="0.1" min="0.1" placeholder="5.0" required />
+                <span class="goal-unit">kg CO₂ reduction</span>
+                <button type="submit" class="goal-btn">Set Goal</button>
+              </div>
+            </form>
+          </div>
+          
+          <div class="progress-card">
+            <h3><i class="fa-solid fa-chart-line"></i> Weekly Progress</h3>
+            <div class="progress-stats">
+              <div class="stat-item">
+                <span class="stat-label">Current Week:</span>
+                <span id="current-week-emissions" class="stat-value">0.0</span>
+                <span class="stat-unit">kg CO₂</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Target Reduction:</span>
+                <span id="target-reduction-display" class="stat-value">0.0</span>
+                <span class="stat-unit">kg CO₂</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Actual Reduction:</span>
+                <span id="actual-reduction" class="stat-value">0.0</span>
+                <span class="stat-unit">kg CO₂</span>
+              </div>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p id="progress-text" class="progress-text">0% of goal achieved</p>
+          </div>
+        </div>
       </section>
 
       <section class="streak-section">
@@ -276,6 +335,6 @@
 
     <script src="src/config.js"></script>
     <script src="src/home_redirect.js"></script>
-    <script src="src/dashboard.js"></script>
+    <script type="module" src="src/dashboard.js"></script>
   </body>
 </html>

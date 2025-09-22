@@ -347,6 +347,131 @@ const getPersonalizedAnalysis = async (req, res) => {
   }
 };
 
+const setWeeklyGoal = async (req, res) => {
+  try {
+    const {targetReduction} = req.body
+    if (!targetReduction || targetReduction <= 0) {
+      return res.status(400).json({
+        message:"Valid target reduction is required."
+      })
+    }
+
+    console.log('-------------------------------')
+    console.log("i got here")
+    console.log('-------------------------------')
+
+    const now = new Date()
+    const weekStart = new Date(now.setDate(now.getDate()-now.getDay()))
+    weekStart.setHours(0,0,0,0)
+
+    const weeklyGoal = new Activity({
+      user:req.user.id,
+      category:"goal",
+      activity:"weekly_target",
+      quantity:targetReduction,
+      unit:"kg C02",
+      co2Emissions: 0,
+      timestamp:weekStart,
+      metadata: {weekStart: weekStart.toISOString()}
+    })
+
+    await weeklyGoal.save()
+
+    if (req.io) {
+      req.io.to(`user-${req.user.id}`).emit("goal-updated",{
+        targetReduction, weekStart: weekStart.toISOString()
+      })
+    }
+
+    res.status(201).json({
+      message:"Weekly goal set successfully", targetReduction
+    })
+
+  }catch(error){
+    console.error(error)
+    res.status(500).json({
+      message:"Error setting weekly goal"
+    })
+  }
+}
+
+const getWeeklyProgress = async (req, res) => {
+  try {
+    const now = new Date()
+    const weekStart = new Date(now.setDate(now.getDate() - now.getDay()))
+    weekStart.setHours(0, 0, 0, 0)
+
+    const weekEnd = new Date(weekStart)
+    weekEnd.setDate(weekEnd.getDate() + 7)
+
+    // Get current week's activities
+    const weekActivities = await Activity.find({
+      user: req.user.id,
+      category: { $ne: "goal" },
+      timestamp: { $gte: weekStart, $lt: weekEnd },
+    })
+
+    // Get current week's goal
+    const weeklyGoal = await Activity.findOne({
+      user: req.user.id,
+      category: "goal",
+      activity: "weekly_target",
+      timestamp: { $gte: weekStart, $lt: weekEnd },
+    })
+
+    const currentEmissions = weekActivities.reduce((sum, activity) => sum + activity.co2Emissions, 0)
+    const targetReduction = weeklyGoal ? weeklyGoal.quantity : 0
+
+    // Get previous week for comparison
+    const prevWeekStart = new Date(weekStart)
+    prevWeekStart.setDate(prevWeekStart.getDate() - 7)
+    const prevWeekActivities = await Activity.find({
+      user: req.user.id,
+      category: { $ne: "goal" },
+      timestamp: { $gte: prevWeekStart, $lt: weekStart },
+    })
+
+    const previousWeekEmissions = prevWeekActivities.reduce((sum, activity) => sum + activity.co2Emissions, 0)
+    const actualReduction = Math.max(0, previousWeekEmissions - currentEmissions)
+    const progressPercentage = targetReduction > 0 ? Math.min(100, (actualReduction / targetReduction) * 100) : 0
+
+    // Generate real-time tip based on progress
+    let tip = "Keep logging your activities to track your progress!"
+    if (targetReduction > 0) {
+      if (progressPercentage >= 100) {
+        tip = "🎉 Congratulations! You've exceeded your weekly reduction goal!"
+      } else if (progressPercentage >= 75) {
+        tip = "Great progress! You're almost at your weekly goal. Keep it up!"
+      } else if (progressPercentage >= 50) {
+        tip = "Good work! You're halfway to your weekly reduction target."
+      } else if (progressPercentage >= 25) {
+        tip = "You're making progress! Consider reducing high-emission activities to reach your goal."
+      } else {
+        tip = "Focus on your highest emission category to make significant progress toward your goal."
+      }
+    }
+
+    const progressData = {
+      currentEmissions: Number.parseFloat(currentEmissions.toFixed(2)),
+      targetReduction: Number.parseFloat(targetReduction.toFixed(2)),
+      actualReduction: Number.parseFloat(actualReduction.toFixed(2)),
+      progressPercentage: Number.parseFloat(progressPercentage.toFixed(1)),
+      previousWeekEmissions: Number.parseFloat(previousWeekEmissions.toFixed(2)),
+      tip,
+      weekStart: weekStart.toISOString(),
+    }
+
+    if (req.io) {
+      req.io.to(`user-${req.user.id}`).emit("progress-updated", progressData)
+    }
+
+    res.json(progressData)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: "Error fetching weekly progress" })
+  }
+}
+
 export {
   addActivity,
   getUserActivities,
@@ -356,4 +481,6 @@ export {
   getUserSummary,
   getUserStreak,
   getPersonalizedAnalysis,
+  getWeeklyProgress,
+  setWeeklyGoal
 };

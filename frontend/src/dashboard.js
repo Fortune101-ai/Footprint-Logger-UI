@@ -1,3 +1,4 @@
+
 class CarbonFootprintTracker {
   constructor() {
     this.activities = [];
@@ -14,12 +15,22 @@ class CarbonFootprintTracker {
       tip: "",
       categoryEmissions: 0,
     };
+    this.socket = null
+    this.weeklyProgress = {
+      currentEmissions: 0,
+      targetReduction: 0,
+      actualReduction:0,
+      progressPercentage:0,
+      tip:0,
+
+    }
 
     this.init();
   }
 
   async init() {
     await this.fetchUserProfile();
+    this.initWebSocket()
     this.setupEventListeners();
     await this.fetchActivities();
     await this.fetchSummary();
@@ -29,6 +40,70 @@ class CarbonFootprintTracker {
     this.initChart();
     this.render();
   }
+
+  initWebSocket() {
+    try {
+      this.socket = socket
+
+      this.socket.on("connect", ()=>{
+        console.log("Connected to server")
+        if (this.userId) {
+          this.socket.emit("join-user", this.userId)
+        }
+      })
+
+      this.socket.on("activity-added", (data) => {
+        this.showRealTimeTip(`Activity logged: ${data.message}`)
+        this.fetchSummary()
+        this.fetchWeeklyProgress()
+      })
+
+      this.socket.on("goal-updated", (data) => {
+        this.showRealTimeTip(`Weekly goal updated: ${data.targetReduction}kg CO2 reduction target`)
+        this.fetchWeeklyProgress()
+      })
+
+      this.socket.on("progress-updated", (data) => {
+        this.weeklyProgress = data
+        this.renderWeeklyProgress()
+        this.showRealTimeTip(data.tip)
+      })
+
+      this.socket.on("disconnect", () => {
+        console.log("Disconnected from server")
+      })
+    } catch(error){
+      console.error("WebSocket connection failed:", error)
+    }
+  }
+
+  showRealTimeTip(message) {
+    const tipContainer = document.getElementById("real-time-tip")
+    if (tipContainer) {
+      tipContainer.textContent = message
+      tipContainer.classList.add("show")
+
+      setTimeout(() => {
+        tipContainer.classList.remove("show")
+      }, 5000)
+    }
+  }
+
+
+  async fetchWeeklyProgress() {
+    try {
+      const res = await fetch(`${window.ENV.BACKEND_URL}/api/activities/weekly-progress`, {
+        headers: { Authorization: `Bearer ${this.token}` },
+      })
+      if (!res.ok) throw new Error("Failed to fetch weekly progress")
+
+      this.weeklyProgress = await res.json()
+      this.renderWeeklyProgress()
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
 
   async fetchUserProfile() {
     try {
@@ -52,6 +127,7 @@ class CarbonFootprintTracker {
     document
       .getElementById("activity-form")
       .addEventListener("submit", (e) => this.addActivity(e));
+    document.getElementById("weekly-goal-form").addEventListener("submit", (e) => this.setWeeklyGoal(e))
     document.querySelectorAll(".filter-btn").forEach((btn) => {
       btn.addEventListener("click", () => this.setFilter(btn));
     });
@@ -63,6 +139,40 @@ class CarbonFootprintTracker {
         localStorage.removeItem("userId");
         window.location.href = "login.html";
       });
+    }
+  }
+
+  async setWeeklyGoal(e) {
+    e.preventDefault()
+    const targetReduction = Number.parseFloat(document.getElementById("target-reduction").value)
+
+    if (!targetReduction || targetReduction <= 0) {
+      alert("Please enter a valid reduction target")
+      return
+    }
+
+    try {
+      const res = await fetch(`${window.ENV.BACKEND_URL}/api/activities/weekly-goal`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.token}`,
+        },
+        body: JSON.stringify({ targetReduction }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        alert(data.message || "Error setting weekly goal")
+        return
+      }
+
+      document.getElementById("weekly-goal-form").reset()
+      await this.fetchWeeklyProgress()
+      this.showRealTimeTip(`Weekly goal set: ${targetReduction}kg CO2 reduction target`)
+    } catch (err) {
+      console.error(err)
+      alert("Something went wrong. Try again.")
     }
   }
 
@@ -81,7 +191,7 @@ class CarbonFootprintTracker {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/activities/options?category=${category}`,
+        `${window.ENV.BACKEND_URL}/api/activities/options?category=${category}`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
       if (!res.ok) throw new Error("Failed to fetch activity options");
@@ -321,6 +431,34 @@ class CarbonFootprintTracker {
       this.summary.monthly.toFixed(1);
   }
 
+  renderWeeklyProgress() {
+    const progressBar = document.getElementById("progress-bar")
+    const progressText = document.getElementById("progress-text")
+    const currentEmissionsEl = document.getElementById("current-week-emissions")
+    const targetReductionEl = document.getElementById("target-reduction-display")
+    const actualReductionEl = document.getElementById("actual-reduction")
+
+    if (progressBar) {
+      progressBar.style.width = `${Math.min(100, this.weeklyProgress.progressPercentage)}%`
+    }
+
+    if (progressText) {
+      progressText.textContent = `${this.weeklyProgress.progressPercentage}% of goal achieved`
+    }
+
+    if (currentEmissionsEl) {
+      currentEmissionsEl.textContent = this.weeklyProgress.currentEmissions.toFixed(1)
+    }
+
+    if (targetReductionEl) {
+      targetReductionEl.textContent = this.weeklyProgress.targetReduction.toFixed(1)
+    }
+
+    if (actualReductionEl) {
+      actualReductionEl.textContent = this.weeklyProgress.actualReduction.toFixed(1)
+    }
+  }
+
   renderStreak() {
     const currentStreakEl = document.getElementById("current-streak");
     const longestStreakEl = document.getElementById("longest-streak");
@@ -466,6 +604,7 @@ class CarbonFootprintTracker {
     this.renderAverageEmissions();
     this.renderPersonalizedTip();
     this.updateTotalEmissions();
+    this.renderWeeklyProgress();
   }
 
   renderActivities() {

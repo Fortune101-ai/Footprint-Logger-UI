@@ -355,6 +355,183 @@ section {
   grid-column: 1 / -1;
 }
 
+.weekly-goals-section {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, var(--muted) 0%, var(--background) 100%);
+  border: 2px solid var(--border);
+  border-left: 4px solid var(--success);
+  margin-bottom: 2rem;
+}
+
+.goals-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.goal-setting-card,
+.progress-card {
+  background: var(--background);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.goal-setting-card:hover,
+.progress-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.goal-setting-card h3,
+.progress-card h3 {
+  font-size: 1rem;
+  color: var(--muted-foreground);
+  margin-bottom: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.goal-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+#target-reduction {
+  flex: 1;
+  min-width: 100px;
+  padding: 0.75rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.goal-unit {
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+.goal-btn {
+  background: var(--success);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.goal-btn:hover {
+  background: var(--success-dark);
+  transform: translateY(-1px);
+}
+
+.progress-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-unit {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  margin-left: 0.25rem;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 12px;
+  background: var(--muted);
+  border-radius: calc(var(--radius) * 2);
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--success) 0%, var(--primary) 100%);
+  border-radius: calc(var(--radius) * 2);
+  transition: width 0.5s ease;
+  width: 0%;
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+  font-weight: 600;
+  margin: 0;
+}
+
+.real-time-tip {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: var(--success);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  transform: translateX(400px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  max-width: 350px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.real-time-tip.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.real-time-tip i {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.tip-message {
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
 .form-group {
   margin-bottom: 1.5rem;
 }
