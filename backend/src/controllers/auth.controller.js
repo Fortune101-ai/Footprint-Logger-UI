@@ -20,7 +20,7 @@ const register = asyncRouteWrapper(async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const user = new User({ username, email, passwordHash: hashedPassword });
+  const user = new User({ username, email, passwordHash: hashedPassword,role:'user' });
   await user.save();
 
   const token = sign(user._id);
