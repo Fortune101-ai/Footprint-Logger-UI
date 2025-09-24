@@ -102,6 +102,7 @@ const getUserActivities = async (req, res) => {
 const getActivityOptions = async (req, res) => {
   try {
     const { category } = req.query;
+    
     if (!category || !emissionFactors[category]) {
       logger.warn(
         `Invalid category request from User: ${
@@ -111,10 +112,16 @@ const getActivityOptions = async (req, res) => {
       return res.status(400).json({ message: 'Invalid category' });
     }
 
-    const options = Object.keys(emissionFactors[category]);
+    const options = Object.entries(emissionFactors[category]).map(
+      ([name, { factor, unit }]) => ({
+        name,
+        factor,
+        unit,
+      })
+    );
 
     logger.info(`Fetched activity options for category: ${category}`);
-    res.status(200).json(options);
+    res.status(200).json({ category, options });
   } catch (error) {
     logger.error(`Error fetching activity options: ${error.message}`, {
       stack: error.stack,
@@ -356,10 +363,6 @@ const setWeeklyGoal = async (req, res) => {
       })
     }
 
-    console.log('-------------------------------')
-    console.log("i got here")
-    console.log('-------------------------------')
-
     const now = new Date()
     const weekStart = new Date(now.setDate(now.getDate()-now.getDay()))
     weekStart.setHours(0,0,0,0)
@@ -388,7 +391,7 @@ const setWeeklyGoal = async (req, res) => {
     })
 
   }catch(error){
-    console.error(error)
+    logger.error(`Error setting weekly goal: ${error.message}`)
     res.status(500).json({
       message:"Error setting weekly goal"
     })
@@ -404,14 +407,12 @@ const getWeeklyProgress = async (req, res) => {
     const weekEnd = new Date(weekStart)
     weekEnd.setDate(weekEnd.getDate() + 7)
 
-    // Get current week's activities
     const weekActivities = await Activity.find({
       user: req.user.id,
       category: { $ne: "goal" },
       timestamp: { $gte: weekStart, $lt: weekEnd },
     })
 
-    // Get current week's goal
     const weeklyGoal = await Activity.findOne({
       user: req.user.id,
       category: "goal",
@@ -422,7 +423,6 @@ const getWeeklyProgress = async (req, res) => {
     const currentEmissions = weekActivities.reduce((sum, activity) => sum + activity.co2Emissions, 0)
     const targetReduction = weeklyGoal ? weeklyGoal.quantity : 0
 
-    // Get previous week for comparison
     const prevWeekStart = new Date(weekStart)
     prevWeekStart.setDate(prevWeekStart.getDate() - 7)
     const prevWeekActivities = await Activity.find({
@@ -435,7 +435,6 @@ const getWeeklyProgress = async (req, res) => {
     const actualReduction = Math.max(0, previousWeekEmissions - currentEmissions)
     const progressPercentage = targetReduction > 0 ? Math.min(100, (actualReduction / targetReduction) * 100) : 0
 
-    // Generate real-time tip based on progress
     let tip = "Keep logging your activities to track your progress!"
     if (targetReduction > 0) {
       if (progressPercentage >= 100) {
@@ -467,7 +466,7 @@ const getWeeklyProgress = async (req, res) => {
 
     res.json(progressData)
   } catch (error) {
-    console.error(error)
+    logger.error(`Error fetching weekly progress: ${error.message}`)
     res.status(500).json({ message: "Error fetching weekly progress" })
   }
 }
