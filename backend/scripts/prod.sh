@@ -46,6 +46,6 @@ for i in {1..10}; do
 done
 
 echo ""
-echo "🎉 $ENV environment started!"
+echo "   $ENV environment started!"
 echo "   Application: http://localhost:5000"
 echo "   Logs: docker logs footprint-logger-app-prod"
