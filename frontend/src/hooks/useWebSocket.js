@@ -40,5 +40,5 @@ export default function useWebSocket(socketHandlersRef) {
     return () => {
       socketRef.current?.disconnect();
     };
-  }, []);
+  }, [socketHandlersRef]);
 }
