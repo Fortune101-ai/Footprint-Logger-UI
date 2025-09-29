@@ -35,15 +35,19 @@ const ActivityChart = ({ activities, socket }) => {
       energy: "#d69e2e",
       waste: "#e53e3e",
     };
-    const entries = Object.entries(totals).filter(([v]) => v > 0);
+
+    const entries = Object.entries(totals).filter(([, value]) => value > 0);
 
     chartInstanceRef.current.data.labels = entries.map(
-      ([k]) => k.charAt(0).toUpperCase() + k.slice(1)
+      ([key]) => key.charAt(0).toUpperCase() + key.slice(1)
     );
-    chartInstanceRef.current.data.datasets[0].data = entries.map(([v]) => v);
+    chartInstanceRef.current.data.datasets[0].data = entries.map(
+      ([, value]) => value
+    );
     chartInstanceRef.current.data.datasets[0].backgroundColor = entries.map(
-      ([k]) => colorMap[k]
+      ([key]) => colorMap[key]
     );
+
     chartInstanceRef.current.update();
   };
 
@@ -99,11 +103,8 @@ const ActivityChart = ({ activities, socket }) => {
   }, [activities]);
 
   useEffect(() => {
-    updateChart(activities);
-  }, [activities]);
-
-  useEffect(() => {
     if (!socket) return;
+
     const handleActivityAdded = (data) => {
       updateChart([...activities, data]);
     };
@@ -121,8 +122,8 @@ const ActivityChart = ({ activities, socket }) => {
   }, [activities, socket]);
 
   return (
-    <div className="chart-container" style={{ height: "350px" }}>
-      <canvas ref={chartRef}></canvas>
+    <div className="chart-container" style={{ height: "350px", width: "100%" }}>
+      <canvas ref={chartRef} style={{ width: "100%", height: "100%" }}></canvas>
     </div>
   );
 };
