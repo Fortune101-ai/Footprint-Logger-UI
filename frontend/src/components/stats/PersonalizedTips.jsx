@@ -20,7 +20,7 @@ const PersonalizedTips = ({ personalizedAnalysis }) => (
                   personalizedAnalysis.highestCategory.slice(1)}
               </strong>
               <span className="category-emissions">
-                {(personalizedAnalysis.categoryEmissions || 0).toFixed(1)} kg
+                {(personalizedAnalysis.categoryEmissions || 0).toFixed(2)} kg
                 CO₂
               </span>
             </>

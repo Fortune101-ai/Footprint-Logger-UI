@@ -19,7 +19,7 @@ const Leaderboard = ({ leaderboard = [] }) => (
             <span className="rank">{idx + 1}.</span>
             <span className="username">{entry.username}</span>
             <span className="emission">
-              {(entry.totalEmissions || 0).toFixed(1)} kg CO₂
+              {(entry.totalEmissions || 0).toFixed(2)} kg CO₂
             </span>
             {idx === 0 && <span className="badge gold">🏆</span>}
             {idx === 1 && <span className="badge silver">🥈</span>}
