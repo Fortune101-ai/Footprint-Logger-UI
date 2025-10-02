@@ -2,6 +2,8 @@
 
 A beautiful, user-friendly web application that helps individuals track their daily activities and monitor their environmental impact. Built with simplicity in mind, this app makes it easy for anyone to understand and reduce their carbon footprint.
 
+---
+
 ## What is a Carbon Footprint?
 
 Your **carbon footprint** is the total amount of greenhouse gases (mainly CO₂) that your daily activities produce. This includes things like:  
@@ -12,6 +14,8 @@ Your **carbon footprint** is the total amount of greenhouse gases (mainly CO₂)
 - The waste you produce  
 
 By tracking these activities, you can see where you have the biggest impact and make changes to help protect our planet!
+
+---
 
 ## Features
 
@@ -93,6 +97,8 @@ npm run start:dev
 
 Backend should now be running and listening for requests
 
+---
+
 ### **Frontend Setup**
 
 1. Navigate to the frontend directory
@@ -115,7 +121,10 @@ npm run dev
 
 4. Open your browser and navigate to [http://localhost:5173/](http://localhost:5173/)
 
+![Homepage](./images/Footprint_Logger_Homepage.png)
+
 you should see the applications homepage to which you can create your account by registering or login via the login page.
+
 
 ### **Bot Detection Notice**
 
