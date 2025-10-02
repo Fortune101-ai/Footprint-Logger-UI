@@ -1,4 +1,10 @@
+/**
+ * Import Winston, A logging library for Node.js
+ * Logging helps with tract application activities and assists with debugging
+ */
+
 import winston from 'winston';
+
 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
