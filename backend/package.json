@@ -19,7 +19,9 @@
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "start:prod": "./scripts/prod.sh",
-    "stop:prod": "docker compose -f docker-compose.prod.yml down"
+    "stop:prod": "docker compose -f docker-compose.prod.yml down",
+    "start:dev":"./scripts/dev.sh",
+    "stop:dev":"docker compose -f docker-compose.dev.yml down"
   },
   "keywords": [],
   "author": "",

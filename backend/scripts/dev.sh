@@ -3,8 +3,8 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-ENV=${1:-production}
-COMPOSE_FILE="docker-compose.prod.yml"
+ENV=${1:-development}
+COMPOSE_FILE="docker-compose.dev.yml"
 ENV_FILE=".env.$ENV"
 
 echo "Starting Footprint Logger App in ${ENV^} Mode"
@@ -48,4 +48,4 @@ done
 echo ""
 echo "   $ENV environment started!"
 echo "   Application: http://localhost:5000"
-echo "   Logs: docker logs footprint-logger-app-prod"
+echo "   Logs: docker logs footprint-logger-app-dev"
